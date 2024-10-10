@@ -1,0 +1,10 @@
+- ignore:
+    name: "Use newtype instead of data"
+- ignore:
+    name: "Use section"
+- ignore:
+    name: "Use unless"
+- ignore:
+    name: "Use ++"
+- ignore:
+    name: "Fuse on/on"

@@ -1,0 +1,26 @@
+name: necrork-sdk
+version: 0.0.0.0
+github: "NorfairKing/necrork"
+license: AllRightsReserved
+author: "Tom Sydney Kerckhove"
+maintainer: "syd@cs-syd.eu"
+copyright: "Copyright (c) 2024 Tom Sydney Kerckhove"
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+  dependencies:
+    - autodocodec
+    - containers
+    - http-client
+    - http-client-tls
+    - looper
+    - monad-logger
+    - necrork-peer-api
+    - necrork-peer-client
+    - opt-env-conf
+    - text
+    - token-limiter-concurrent
+    - unliftio

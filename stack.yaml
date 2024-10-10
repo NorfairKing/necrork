@@ -1,0 +1,51 @@
+resolver: lts-22.22
+packages:
+- necrork-peer-api
+- necrork-peer-api-gen
+- necrork-peer-client
+- necrork-sdk
+
+ghc-options:
+  "$locals": -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates -Wpartial-fields -Widentities -Wredundant-constraints -Wcpp-undef -Wunused-packages
+
+extra-deps:
+- github: NorfairKing/token-limiter-concurrent
+  commit: 50466d2b9fae420e3f7bb5102187506dd64e6d23
+  subdirs:
+    - token-limiter-concurrent
+- servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
+- github: NorfairKing/safe-coloured-text
+  commit: 046f10147a058c00c2706d98c341219e3cbc7669
+  subdirs:
+  - safe-coloured-text
+  - safe-coloured-text-layout
+  - safe-coloured-text-gen
+- github: NorfairKing/autodocodec
+  commit: be4aba9ef133520a8a4087aa26915aaabf1376a7
+  subdirs:
+    - autodocodec
+    - autodocodec-yaml
+    - autodocodec-schema
+    - autodocodec-nix
+
+- github: NorfairKing/opt-env-conf
+  commit: bc2e3b33ec7faaae1a225cb78915893698e13469
+  subdirs:
+    - opt-env-conf
+    - opt-env-conf-test
+
+- github: NorfairKing/looper
+  commit: 8dcec153ccdb61db9603b6a1d6dee6c551dcc329
+  subdirs:
+    - looper
+
+- github: NorfairKing/intray
+  commit: fe553df9f74ae6a83982c9a29985e80caf964993
+  subdirs:
+    - intray-api
+    - intray-api-gen
+    - intray-cli-data
+    - intray-client
+nix:
+  enable: false
+system-ghc: true

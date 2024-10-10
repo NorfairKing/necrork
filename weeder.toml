@@ -1,0 +1,25 @@
+unused-types = true
+type-class-roots = false
+roots = [
+  # General
+  "^Main.main$",
+  "^Paths_.*",
+  "Necrork.SDK.withNotifier",
+]
+root-instances = [
+  # Generated instances
+  ## Database
+  {class = 'ToBackendKey', module = "^Necrork.Peer.DB$"},
+  {instance = 'OnlyOneUniqueKey .*', module = "Necrork.Peer.DB"},
+  {instance = '^AtLeastOneUniqueKey .*', module = "Necrork.Peer.DB"},
+  {instance = '^FromHttpApiData .*$', module = "Necrork.Peer.DB"},
+  {instance = '^FromHttpApiData \(Key .*\)$'},
+  {instance = '^PathPiece \(Key .*\)$'},
+  {instance = '^PathPiece .*Id$'},
+  {instance = '^PersistFieldSql .*$', module = "Necrork.Peer.DB"},
+  {instance = '^PersistFieldSql \(Key .*\)$'},
+  {instance = '^SymbolToField .*', module = "Necrork.Peer.DB"},
+  {instance = '^ToBackendKey .*', module = "Necrork.Peer.DB"},
+  {instance = '^ToHttpApiData .*$', module = "Necrork.Peer.DB"},
+  {instance = '^ToHttpApiData \(Key .*\)$'},
+]

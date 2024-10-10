@@ -1,0 +1,34 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           necrork-peer-client
+version:        0.0.0.0
+homepage:       https://github.com/NorfairKing/necrork#readme
+bug-reports:    https://github.com/NorfairKing/necrork/issues
+author:         Tom Sydney Kerckhove
+maintainer:     syd@cs-syd.eu
+copyright:      Copyright (c) 2024 Tom Sydney Kerckhove
+license:        AllRightsReserved
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/NorfairKing/necrork
+
+library
+  exposed-modules:
+      Necrork.Peer.Client
+  other-modules:
+      Paths_necrork_peer_client
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , necrork-peer-api
+    , servant
+    , servant-client
+    , servant-client-core
+  default-language: Haskell2010
