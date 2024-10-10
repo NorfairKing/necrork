@@ -2,7 +2,7 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Necrork.Peer.API.SwitchName
+module Necrork.API.SwitchName
   ( SwitchName (..),
   )
 where

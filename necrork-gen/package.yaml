@@ -1,4 +1,4 @@
-name: necrork-peer-api-gen
+name: necrork-gen
 version: 0.0.0.0
 github: "NorfairKing/necrork"
 license: AllRightsReserved
@@ -17,11 +17,11 @@ library:
     - genvalidity-containers
     - genvalidity-text
     - intray-api-gen
-    - necrork-peer-api
+    - necrork
     - servant-client
 
 tests:
-  necrork-peer-api-test:
+  necrork-test:
     main: Spec.hs
     source-dirs: test
     build-tools: sydtest-discover
@@ -32,7 +32,7 @@ tests:
     dependencies:
     - genvalidity-sydtest
     - genvalidity-sydtest-persistent
-    - necrork-peer-api
-    - necrork-peer-api-gen
+    - necrork
+    - necrork-gen
     - servant-client
     - sydtest

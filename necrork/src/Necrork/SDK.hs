@@ -15,8 +15,7 @@ module Necrork.SDK
     notifier,
     notifierLooper,
     runNotifierOnce,
-    module Necrork.Peer.API,
-    module Necrork.Peer.Client,
+    module Necrork.Client,
   )
 where
 
@@ -33,8 +32,7 @@ import qualified Data.Text as T
 import Data.Void
 import Data.Word
 import Looper
-import Necrork.Peer.API
-import Necrork.Peer.Client
+import Necrork.Client
 import Network.HTTP.Client as HTTP
 import Network.HTTP.Client.TLS as HTTP
 import OptEnvConf

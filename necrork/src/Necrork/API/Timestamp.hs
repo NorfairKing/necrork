@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
 
-module Necrork.Peer.API.Timestamp
+module Necrork.API.Timestamp
   ( Timestamp (..),
     mkTimestamp,
     timestampUTCTime,

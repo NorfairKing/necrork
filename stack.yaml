@@ -1,9 +1,7 @@
 resolver: lts-22.22
 packages:
-- necrork-peer-api
-- necrork-peer-api-gen
-- necrork-peer-client
-- necrork-sdk
+- necrork-gen
+- necrork
 
 ghc-options:
   "$locals": -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates -Wpartial-fields -Widentities -Wredundant-constraints -Wcpp-undef -Wunused-packages

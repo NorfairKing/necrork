@@ -82,10 +82,8 @@ with final.haskell.lib;
             }));
 
         necrorkPackages = {
-          necrork-peer-api = necrorkPkg "necrork-peer-api";
-          necrork-peer-api-gen = necrorkPkg "necrork-peer-api-gen";
-          necrork-peer-client = necrorkPkg "necrork-peer-client";
-          necrork-sdk = necrorkPkg "necrork-sdk";
+          necrork-gen = necrorkPkg "necrork-gen";
+          necrork = necrorkPkg "necrork";
         };
       in
       {

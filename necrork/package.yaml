@@ -1,4 +1,4 @@
-name: necrork-peer-api
+name: necrork
 version: 0.0.0.0
 github: "NorfairKing/necrork"
 license: AllRightsReserved
@@ -17,12 +17,18 @@ library:
     - bytestring
     - containers
     - http-api-data
+    - http-client
+    - http-client-tls
+    - looper
+    - monad-logger
     - opt-env-conf
-    - persistent
     - persistent
     - servant
     - servant-client
+    - servant-client-core
     - text
     - time
+    - token-limiter-concurrent
+    - unliftio
     - validity
     - validity-text

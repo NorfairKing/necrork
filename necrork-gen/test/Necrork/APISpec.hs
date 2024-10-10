@@ -1,9 +1,9 @@
 {-# LANGUAGE TypeApplications #-}
 
-module Necrork.Peer.APISpec (spec) where
+module Necrork.APISpec (spec) where
 
-import Necrork.Peer.API
-import Necrork.Peer.API.Gen ()
+import Necrork.API
+import Necrork.Gen ()
 import Servant.Client
 import Test.Syd
 import Test.Syd.Validity

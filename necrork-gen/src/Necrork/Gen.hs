@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Necrork.Peer.API.Gen where
+module Necrork.Gen where
 
 import Control.Monad
 import Data.GenValidity
@@ -8,7 +8,7 @@ import Data.GenValidity.Containers ()
 import Data.GenValidity.Text ()
 import qualified Data.List.NonEmpty as NE
 import Intray.API.Gen ()
-import Necrork.Peer.API
+import Necrork.API
 import Servant.Client
 import Test.QuickCheck
 

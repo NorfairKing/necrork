@@ -8,10 +8,10 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Necrork.Peer.API
-  ( module Necrork.Peer.API,
-    module Necrork.Peer.API.SwitchName,
-    module Necrork.Peer.API.Timestamp,
+module Necrork.API
+  ( module Necrork.API,
+    module Necrork.API.SwitchName,
+    module Necrork.API.Timestamp,
   )
 where
 
@@ -30,8 +30,8 @@ import Data.Validity
 import Data.Validity.Text ()
 import Data.Word
 import Database.Persist.Sql
-import Necrork.Peer.API.SwitchName
-import Necrork.Peer.API.Timestamp
+import Necrork.API.SwitchName
+import Necrork.API.Timestamp
 import OptEnvConf
 import Servant.API
 import Servant.API.Generic
