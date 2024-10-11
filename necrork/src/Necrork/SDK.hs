@@ -135,7 +135,7 @@ defaultNotifierLooperSettings =
   LooperSettings
     { looperSetEnabled = True,
       looperSetPhase = seconds 0,
-      looperSetPeriod = seconds 30
+      looperSetPeriod = seconds 300
     }
 
 data NotifierEnv = NotifierEnv
