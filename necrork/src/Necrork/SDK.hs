@@ -234,12 +234,13 @@ runNotifierOnce NotifierEnv {..} = go
                   { putSwitchRequestTimeout = notifierEnvTimeout,
                     putSwitchRequestNotifySettings = notifierEnvNotifySettings
                   }
-          logDebugN $
+          logInfoN $
             T.pack $
               unwords
-                [ "Notifying necrork that",
+                [ "Configuring switch",
                   show notifierEnvSwitchName,
-                  "is still alive."
+                  "on necrork at",
+                  show (showBaseUrl burl)
                 ]
           errOrResult <-
             liftIO $
@@ -256,7 +257,7 @@ runNotifierOnce NotifierEnv {..} = go
                       show err
                     ]
               pure Nothing
-            Right PutSwitchResponse {..} ->
+            Right PutSwitchResponse {..} -> do
               pure $ Just putSwitchResponsePeers
         contactPeerToSayWeAreStillAlive :: BaseUrl -> m (Maybe ())
         contactPeerToSayWeAreStillAlive burl = do
@@ -265,10 +266,12 @@ runNotifierOnce NotifierEnv {..} = go
                 PutAliveRequest
                   {
                   }
-          logDebugN $
+          logInfoN $
             T.pack $
               unwords
-                [ "Notifying necrork that",
+                [ "Notifying necrork at",
+                  show (showBaseUrl burl),
+                  "that",
                   show notifierEnvSwitchName,
                   "is still alive."
                 ]
