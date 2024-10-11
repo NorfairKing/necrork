@@ -53,22 +53,6 @@
         "type": "github"
       }
     },
-    "intray": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1727953064,
-        "narHash": "sha256-8WvhLHjqx42FjQkrskq/WE7hHn/enKIe2NgxtDGp8/Q=",
-        "owner": "NorfairKing",
-        "repo": "intray",
-        "rev": "3459d93705aa656237488426779b0ab9d0afd3ef",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NorfairKing",
-        "repo": "intray",
-        "type": "github"
-      }
-    },
     "looper": {
       "flake": false,
       "locked": {
@@ -173,7 +157,6 @@
     "root": {
       "inputs": {
         "autodocodec": "autodocodec",
-        "intray": "intray",
         "looper": "looper",
         "nixpkgs": "nixpkgs",
         "opt-env-conf": "opt-env-conf",

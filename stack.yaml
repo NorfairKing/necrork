@@ -36,14 +36,6 @@ extra-deps:
   commit: 8dcec153ccdb61db9603b6a1d6dee6c551dcc329
   subdirs:
     - looper
-
-- github: NorfairKing/intray
-  commit: fe553df9f74ae6a83982c9a29985e80caf964993
-  subdirs:
-    - intray-api
-    - intray-api-gen
-    - intray-cli-data
-    - intray-client
 nix:
   enable: false
 system-ghc: true

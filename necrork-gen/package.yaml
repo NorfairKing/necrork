@@ -16,7 +16,6 @@ library:
     - genvalidity
     - genvalidity-containers
     - genvalidity-text
-    - intray-api-gen
     - necrork
     - servant-client
 

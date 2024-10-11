@@ -7,7 +7,6 @@ import Data.GenValidity
 import Data.GenValidity.Containers ()
 import Data.GenValidity.Text ()
 import qualified Data.List.NonEmpty as NE
-import Intray.API.Gen ()
 import Necrork.API
 import Servant.Client
 import Test.QuickCheck

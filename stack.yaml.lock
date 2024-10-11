@@ -154,58 +154,6 @@ packages:
   original:
     subdir: looper
     url: https://github.com/NorfairKing/looper/archive/8dcec153ccdb61db9603b6a1d6dee6c551dcc329.tar.gz
-- completed:
-    name: intray-api
-    pantry-tree:
-      sha256: 2479a639cc6175cb6fdd0d1583feac6fb832fa49b0b94ec946f6dffe6a9b095b
-      size: 1689
-    sha256: 7b1462302c9e2a5ade4d8b8ea609600dc5d24edf10ca42350d4b14c1c94d2d54
-    size: 35274
-    subdir: intray-api
-    url: https://github.com/NorfairKing/intray/archive/fe553df9f74ae6a83982c9a29985e80caf964993.tar.gz
-    version: 0.0.0.0
-  original:
-    subdir: intray-api
-    url: https://github.com/NorfairKing/intray/archive/fe553df9f74ae6a83982c9a29985e80caf964993.tar.gz
-- completed:
-    name: intray-api-gen
-    pantry-tree:
-      sha256: 96a7c3ef99cab748683b6b42676360a7a9c6f7ae8af12511c0b5adaed27167b1
-      size: 1004
-    sha256: 7b1462302c9e2a5ade4d8b8ea609600dc5d24edf10ca42350d4b14c1c94d2d54
-    size: 35274
-    subdir: intray-api-gen
-    url: https://github.com/NorfairKing/intray/archive/fe553df9f74ae6a83982c9a29985e80caf964993.tar.gz
-    version: 0.0.0.0
-  original:
-    subdir: intray-api-gen
-    url: https://github.com/NorfairKing/intray/archive/fe553df9f74ae6a83982c9a29985e80caf964993.tar.gz
-- completed:
-    name: intray-cli-data
-    pantry-tree:
-      sha256: 3c4ee84100b43b19add39da501b7603b5aea88d5737e059f0a3abc156779b766
-      size: 229
-    sha256: 7b1462302c9e2a5ade4d8b8ea609600dc5d24edf10ca42350d4b14c1c94d2d54
-    size: 35274
-    subdir: intray-cli-data
-    url: https://github.com/NorfairKing/intray/archive/fe553df9f74ae6a83982c9a29985e80caf964993.tar.gz
-    version: 0.0.0.0
-  original:
-    subdir: intray-cli-data
-    url: https://github.com/NorfairKing/intray/archive/fe553df9f74ae6a83982c9a29985e80caf964993.tar.gz
-- completed:
-    name: intray-client
-    pantry-tree:
-      sha256: f214d54b8ee4984a0f76e87d82a58881370e52c2fa596272032d6d9272b9a7c7
-      size: 274
-    sha256: 7b1462302c9e2a5ade4d8b8ea609600dc5d24edf10ca42350d4b14c1c94d2d54
-    size: 35274
-    subdir: intray-client
-    url: https://github.com/NorfairKing/intray/archive/fe553df9f74ae6a83982c9a29985e80caf964993.tar.gz
-    version: 0.0.0.0
-  original:
-    subdir: intray-client
-    url: https://github.com/NorfairKing/intray/archive/fe553df9f74ae6a83982c9a29985e80caf964993.tar.gz
 snapshots:
 - completed:
     sha256: 4be1ca5d31689b524a7f0f17a439bbe9136465213edc498e9a395899a670f2aa

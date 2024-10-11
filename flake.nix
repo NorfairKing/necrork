@@ -13,8 +13,6 @@
     looper.flake = false;
     token-limiter-concurrent.url = "github:NorfairKing/token-limiter-concurrent";
     token-limiter-concurrent.flake = false;
-    intray.url = "github:NorfairKing/intray";
-    intray.flake = false;
   };
 
   outputs =
@@ -26,7 +24,6 @@
     , opt-env-conf
     , looper
     , token-limiter-concurrent
-    , intray
     }:
     let
       system = "x86_64-linux";
@@ -40,7 +37,6 @@
           (import (opt-env-conf + "/nix/overlay.nix"))
           (import (looper + "/nix/overlay.nix"))
           (import (token-limiter-concurrent + "/nix/overlay.nix"))
-          (import (intray + "/nix/overlay.nix"))
         ];
       };
       pkgsMusl = pkgs.pkgsMusl;
