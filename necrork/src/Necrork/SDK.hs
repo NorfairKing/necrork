@@ -208,7 +208,7 @@ runNotifierOnce NotifierEnv {..} = go
                   Just newPeers -> pure (appendNewPeers restPeers newPeers |> (False, peer), True)
               else do
                 mDone <- contactPeerToSayWeAreStillAlive peer
-                pure (restPeers |> (False, peer), isJust mDone)
+                pure (restPeers |> (isNothing mDone, peer), isJust mDone)
           atomically $ writeTVar notifierEnvPeerQueue newQueue
           when (not success) go
       where
