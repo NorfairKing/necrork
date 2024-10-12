@@ -3,7 +3,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Necrork.SDK
+module Necrork
   ( NotifierSettings (..),
     makeNotifierSettings,
     withNotifier,

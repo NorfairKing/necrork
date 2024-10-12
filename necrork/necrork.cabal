@@ -20,11 +20,11 @@ source-repository head
 
 library
   exposed-modules:
+      Necrork
       Necrork.API
       Necrork.API.SwitchName
       Necrork.API.Timestamp
       Necrork.Client
-      Necrork.SDK
   other-modules:
       Paths_necrork
   hs-source-dirs:
