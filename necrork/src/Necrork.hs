@@ -8,7 +8,7 @@ module Necrork
     makeNotifierSettings,
     withNotifier,
     withMNotifier,
-    defaultBaseUrl,
+    defaultNodeUrl,
     defaultNotifierLooperSettings,
     NotifierEnv (..),
     makeNotifierEnv,
@@ -66,7 +66,7 @@ withNotifier settings func = do
 
 data NotifierSettings = NotifierSettings
   { notifierSettingSwitchName :: !SwitchName,
-    notifierSettingBaseUrl :: !BaseUrl,
+    notifierSettingNodeUrl :: !NodeUrl,
     notifierSettingLooperSettings :: !LooperSettings,
     notifierSettingTimeout :: !(Maybe Word32),
     notifierSettingNotifySettings :: !NotifySettings
@@ -75,7 +75,7 @@ data NotifierSettings = NotifierSettings
 
 makeNotifierSettings :: SwitchName -> NotifySettings -> NotifierSettings
 makeNotifierSettings notifierSettingSwitchName notifierSettingNotifySettings =
-  let notifierSettingBaseUrl = defaultBaseUrl
+  let notifierSettingNodeUrl = defaultNodeUrl
       notifierSettingLooperSettings = defaultNotifierLooperSettings
       notifierSettingTimeout = Nothing
    in NotifierSettings {..}
@@ -93,23 +93,23 @@ parseNotifierSettings = do
         name "switch",
         metavar "SWITCH_NAME"
       ]
-  notifierSettingBaseUrl <-
+  notifierSettingNodeUrl <-
     setting
       [ help "Base url of the necrork server",
-        reader $ maybeReader parseBaseUrl,
+        reader $ maybeReader parseNodeUrl,
         option,
         long "url",
         confWith "url" $
           bimapCodec
-            ( \s -> case parseBaseUrl s of
-                Nothing -> Left $ "Could not parse BaseUrl: " <> s
-                Just burl -> Right burl
+            ( \s -> case parseNodeUrl s of
+                Nothing -> Left $ "Could not parse NodeUrl: " <> s
+                Just nurl -> Right nurl
             )
-            showBaseUrl
+            showNodeUrl
             codec,
         env "URL",
         metavar "URL",
-        valueWithShown defaultBaseUrl (showBaseUrl defaultBaseUrl)
+        valueWithShown defaultNodeUrl (showNodeUrl defaultNodeUrl)
       ]
   notifierSettingLooperSettings <-
     parseLooperSettings
@@ -127,8 +127,8 @@ parseNotifierSettings = do
   notifierSettingNotifySettings <- settingsParser
   pure NotifierSettings {..}
 
-defaultBaseUrl :: BaseUrl
-defaultBaseUrl = BaseUrl Https "necrork.cs-syd.eu" 443 ""
+defaultNodeUrl :: NodeUrl
+defaultNodeUrl = NodeUrl $ BaseUrl Https "necrork.cs-syd.eu" 443 ""
 
 defaultNotifierLooperSettings :: LooperSettings
 defaultNotifierLooperSettings =
@@ -147,7 +147,7 @@ data NotifierEnv = NotifierEnv
     -- To limit retries
     notifierEnvTokenLimiter :: !TokenLimiter,
     -- Peers and whether it's the first time we contact them.
-    notifierEnvPeerQueue :: !(TVar (Seq (Bool, BaseUrl)))
+    notifierEnvPeerQueue :: !(TVar (Seq (Bool, NodeUrl)))
   }
 
 makeNotifierEnv :: (MonadIO m) => HTTP.Manager -> NotifierSettings -> m NotifierEnv
@@ -169,7 +169,7 @@ makeNotifierEnv man NotifierSettings {..} = do
               round $
                 100 / looperSetPeriod notifierSettingLooperSettings
           }
-  notifierEnvPeerQueue <- newTVarIO (Seq.singleton (True, notifierSettingBaseUrl))
+  notifierEnvPeerQueue <- newTVarIO (Seq.singleton (True, notifierSettingNodeUrl))
   pure NotifierEnv {..}
 
 notifier :: (MonadUnliftIO m, MonadLogger m) => NotifierEnv -> Maybe (m void)
@@ -213,22 +213,22 @@ runNotifierOnce NotifierEnv {..} = go
           when (not success) go
       where
         appendNewPeers ::
-          Seq (Bool, BaseUrl) ->
-          Set BaseUrl ->
-          Seq (Bool, BaseUrl)
+          Seq (Bool, NodeUrl) ->
+          Set NodeUrl ->
+          Seq (Bool, NodeUrl)
         appendNewPeers = foldl' appendNewPeer
         appendNewPeer ::
-          Seq (Bool, BaseUrl) ->
-          BaseUrl ->
-          Seq (Bool, BaseUrl)
+          Seq (Bool, NodeUrl) ->
+          NodeUrl ->
+          Seq (Bool, NodeUrl)
         appendNewPeer queue peer =
           if peer `elem` map snd (toList queue)
             then queue
             else queue |> (True, peer)
 
-        contactPeerTheFirstTime :: BaseUrl -> m (Maybe (Set BaseUrl))
-        contactPeerTheFirstTime burl = do
-          let cenv = mkClientEnv notifierEnvHttpManager burl
+        contactPeerTheFirstTime :: NodeUrl -> m (Maybe (Set NodeUrl))
+        contactPeerTheFirstTime nurl = do
+          let cenv = mkClientEnv notifierEnvHttpManager (unNodeUrl nurl)
           let request =
                 PutSwitchRequest
                   { putSwitchRequestTimeout = notifierEnvTimeout,
@@ -240,7 +240,7 @@ runNotifierOnce NotifierEnv {..} = go
                 [ "Configuring switch",
                   show notifierEnvSwitchName,
                   "on necrork at",
-                  show (showBaseUrl burl)
+                  show (showNodeUrl nurl)
                 ]
           errOrResult <-
             liftIO $
@@ -253,15 +253,15 @@ runNotifierOnce NotifierEnv {..} = go
                 T.pack $
                   unlines
                     [ "Failed to configure necrork at",
-                      showBaseUrl (baseUrl cenv),
+                      showNodeUrl nurl,
                       show err
                     ]
               pure Nothing
             Right PutSwitchResponse {..} -> do
               pure $ Just putSwitchResponsePeers
-        contactPeerToSayWeAreStillAlive :: BaseUrl -> m (Maybe ())
-        contactPeerToSayWeAreStillAlive burl = do
-          let cenv = mkClientEnv notifierEnvHttpManager burl
+        contactPeerToSayWeAreStillAlive :: NodeUrl -> m (Maybe ())
+        contactPeerToSayWeAreStillAlive nurl = do
+          let cenv = mkClientEnv notifierEnvHttpManager (unNodeUrl nurl)
           let request =
                 PutAliveRequest
                   {
@@ -270,7 +270,7 @@ runNotifierOnce NotifierEnv {..} = go
             T.pack $
               unwords
                 [ "Notifying necrork at",
-                  show (showBaseUrl burl),
+                  show (showNodeUrl nurl),
                   "that",
                   show notifierEnvSwitchName,
                   "is still alive."
@@ -286,7 +286,7 @@ runNotifierOnce NotifierEnv {..} = go
                 T.pack $
                   unlines
                     [ "Failed to notify necrork at",
-                      showBaseUrl (baseUrl cenv),
+                      showNodeUrl nurl,
                       show err
                     ]
               pure Nothing

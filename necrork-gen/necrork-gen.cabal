@@ -52,6 +52,5 @@ test-suite necrork-test
     , genvalidity-sydtest-persistent
     , necrork
     , necrork-gen
-    , servant-client
     , sydtest
   default-language: Haskell2010

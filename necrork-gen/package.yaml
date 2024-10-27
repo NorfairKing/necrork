@@ -33,5 +33,4 @@ tests:
     - genvalidity-sydtest-persistent
     - necrork
     - necrork-gen
-    - servant-client
     - sydtest

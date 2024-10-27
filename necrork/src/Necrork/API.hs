@@ -6,17 +6,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Necrork.API
   ( module Necrork.API,
+    module Necrork.API.NodeUrl,
     module Necrork.API.SwitchName,
     module Necrork.API.Timestamp,
   )
 where
 
 import Autodocodec
-import Control.Monad
 import Data.Aeson as JSON (FromJSON, ToJSON)
 import Data.ByteString (ByteString)
 import Data.Map (Map)
@@ -25,49 +24,16 @@ import Data.Proxy
 import Data.Set (Set)
 import qualified Data.Set as S
 import Data.Text (Text)
-import qualified Data.Text as T
 import Data.Validity
 import Data.Validity.Text ()
 import Data.Word
 import Database.Persist.Sql
+import Necrork.API.NodeUrl
 import Necrork.API.SwitchName
 import Necrork.API.Timestamp
 import OptEnvConf
 import Servant.API
 import Servant.API.Generic
-import Servant.Client
-
-instance Validity Scheme
-
-instance Validity BaseUrl where
-  validate burl =
-    mconcat
-      [ genericValidate burl,
-        declare "it roundtrips through parseBaseUrl" $
-          parseBaseUrl (showBaseUrl burl) == Just burl
-      ]
-
-instance HasCodec BaseUrl where
-  codec =
-    bimapCodec
-      ( \s -> case parseBaseUrl s of
-          Left err -> Left (show err)
-          Right burl -> Right burl
-      )
-      showBaseUrl
-      codec
-
-instance PersistField BaseUrl where
-  toPersistValue = toPersistValue . showBaseUrl
-  fromPersistValue =
-    fromPersistValue
-      >=> ( \s -> case parseBaseUrl s of
-              Left err -> Left (T.pack (show err))
-              Right burl -> Right burl
-          )
-
-instance PersistFieldSql BaseUrl where
-  sqlType Proxy = sqlType (Proxy :: Proxy String)
 
 data FooBarRoutes route = FooBarRoutes
   { postSync :: !(route :- PostSync),
@@ -102,14 +68,14 @@ type PostSync =
 -- Must stay backwards compatible because nodes upgrade at different rates.
 data PostSyncRequest = PostSyncRequest
   { -- Base url of the sending node
-    postSyncRequestNodeBaseUrl :: !BaseUrl,
+    postSyncRequestNodeUrl :: !NodeUrl,
     -- Timestamp according to the sending node.
     postSyncRequestTimestamp :: !Timestamp,
     postSyncRequestTimeout :: !(Maybe Word32),
     postSyncRequestNotifySettings :: !(Maybe NotifySettings),
     postSyncRequestNeedNotifySettings :: !Bool,
-    postSyncRequestNodeTimestamps :: !(Map BaseUrl (Map BaseUrl TimestampTuple)),
-    postSyncRequestSwitchTimestamps :: !(Map SwitchName (Map BaseUrl Timestamp))
+    postSyncRequestNodeTimestamps :: !(Map NodeUrl (Map NodeUrl TimestampTuple)),
+    postSyncRequestSwitchTimestamps :: !(Map SwitchName (Map NodeUrl Timestamp))
   }
   deriving stock (Show, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec PostSyncRequest)
@@ -120,7 +86,7 @@ instance HasCodec PostSyncRequest where
   codec =
     object "PostSyncRequest" $
       PostSyncRequest
-        <$> requiredField "node" "Sending node base url" .= postSyncRequestNodeBaseUrl
+        <$> requiredField "node" "Sending node base url" .= postSyncRequestNodeUrl
         <*> requiredField "time" "Timestamp of request according to the sending node" .= postSyncRequestTimestamp
         <*> optionalField "timeout" "How long after hearing from the sending node to consider it dead" .= postSyncRequestTimeout
         <*> optionalField "notify" "How to notify the admin of the sending node" .= postSyncRequestNotifySettings
@@ -134,8 +100,8 @@ data PostSyncResponse = PostSyncResponse
   { postSyncResponseTimestamp :: !Timestamp,
     postSyncResponseTimeout :: !(Maybe Word32),
     postSyncResponseNotifySettings :: !(Maybe NotifySettings),
-    postSyncResponseNodeTimestamps :: !(Map BaseUrl (Map BaseUrl TimestampTuple)),
-    postSyncResponseSwitchTimestamps :: !(Map SwitchName (Map BaseUrl Timestamp))
+    postSyncResponseNodeTimestamps :: !(Map NodeUrl (Map NodeUrl TimestampTuple)),
+    postSyncResponseSwitchTimestamps :: !(Map SwitchName (Map NodeUrl Timestamp))
   }
   deriving stock (Show, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec PostSyncResponse)
@@ -242,7 +208,7 @@ instance HasCodec PutSwitchRequest where
 
 -- Parsing must stay backward compatible
 data PutSwitchResponse = PutSwitchResponse
-  { putSwitchResponsePeers :: !(Set BaseUrl)
+  { putSwitchResponsePeers :: !(Set NodeUrl)
   }
   deriving stock (Show, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec PutSwitchResponse)

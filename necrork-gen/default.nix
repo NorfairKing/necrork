@@ -13,7 +13,7 @@ mkDerivation {
   ];
   testHaskellDepends = [
     base genvalidity-sydtest genvalidity-sydtest-persistent necrork
-    servant-client sydtest
+    sydtest
   ];
   testToolDepends = [ sydtest-discover ];
   homepage = "https://github.com/NorfairKing/necrork#readme";

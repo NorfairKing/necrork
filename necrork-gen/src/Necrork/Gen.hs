@@ -11,22 +11,21 @@ import Necrork.API
 import Servant.Client
 import Test.QuickCheck
 
-instance GenValid Scheme
-
-instance GenValid BaseUrl where
+instance GenValid NodeUrl where
   genValid =
     ( do
-        scheme <- genValid
+        scheme <- elements [Https, Http]
         hostPart <- NE.toList <$> genNonEmptyOf (choose ('a', 'z'))
         tld <- replicateM 3 (choose ('a', 'z'))
         let host = hostPart ++ "." ++ tld
         port <- choose (0, 65535)
         path <- genListOf (oneof [choose ('a', 'z'), pure '/'])
-        let burl = BaseUrl scheme host port path
-        pure $ showBaseUrl burl
+        let burl = NodeUrl $ BaseUrl scheme host port path
+        pure $ showNodeUrl burl
     )
-      `suchThatMap` parseBaseUrl
+      `suchThatMap` parseNodeUrl
       `suchThat` isValid
+  shrinkValid _ = [] -- Fine for now
 
 instance GenValid Timestamp where
   genValid = genValidStructurallyWithoutExtraChecking

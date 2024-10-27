@@ -22,6 +22,7 @@ library
   exposed-modules:
       Necrork
       Necrork.API
+      Necrork.API.NodeUrl
       Necrork.API.SwitchName
       Necrork.API.Timestamp
       Necrork.Client

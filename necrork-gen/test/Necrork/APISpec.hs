@@ -4,15 +4,15 @@ module Necrork.APISpec (spec) where
 
 import Necrork.API
 import Necrork.Gen ()
-import Servant.Client
 import Test.Syd
 import Test.Syd.Validity
 import Test.Syd.Validity.Persist
 
 spec :: Spec
 spec = do
-  persistSpec @BaseUrl
   genValidSpec @Timestamp
+  genValidSpec @NodeUrl
+  persistSpec @NodeUrl
   genValidSpec @SwitchName
   genValidSpec @PostSyncRequest
   genValidSpec @PostSyncResponse
