@@ -71,7 +71,7 @@ data NotifierSettings = NotifierSettings
     notifierSettingTimeout :: !(Maybe Word32),
     notifierSettingNotifySettings :: !NotifySettings
   }
-  deriving (Show)
+  deriving (Show, Eq)
 
 makeNotifierSettings :: SwitchName -> NotifySettings -> NotifierSettings
 makeNotifierSettings notifierSettingSwitchName notifierSettingNotifySettings =
