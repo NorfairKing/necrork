@@ -19,7 +19,6 @@ module Necrork
   )
 where
 
-import Autodocodec
 import Control.Concurrent.TokenLimiter.Concurrent
 import Control.Monad
 import Control.Monad.Logger
@@ -97,17 +96,7 @@ parseNotifierSettings = do
     setting
       [ help "Base url of the necrork server",
         reader $ maybeReader parseNodeUrl,
-        option,
-        long "url",
-        confWith "url" $
-          bimapCodec
-            ( \s -> case parseNodeUrl s of
-                Nothing -> Left $ "Could not parse NodeUrl: " <> s
-                Just nurl -> Right nurl
-            )
-            showNodeUrl
-            codec,
-        env "URL",
+        name "url",
         metavar "URL",
         valueWithShown defaultNodeUrl (showNodeUrl defaultNodeUrl)
       ]
