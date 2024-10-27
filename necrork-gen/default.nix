@@ -1,7 +1,7 @@
 { mkDerivation, base, genvalidity, genvalidity-containers
 , genvalidity-sydtest, genvalidity-sydtest-persistent
-, genvalidity-text, lib, necrork, QuickCheck, servant-client
-, sydtest, sydtest-discover
+, genvalidity-text, lib, necrork, opt-env-conf-test, QuickCheck
+, servant-client, sydtest, sydtest-discover
 }:
 mkDerivation {
   pname = "necrork-gen";
@@ -13,7 +13,7 @@ mkDerivation {
   ];
   testHaskellDepends = [
     base genvalidity-sydtest genvalidity-sydtest-persistent necrork
-    sydtest
+    opt-env-conf-test sydtest
   ];
   testToolDepends = [ sydtest-discover ];
   homepage = "https://github.com/NorfairKing/necrork#readme";

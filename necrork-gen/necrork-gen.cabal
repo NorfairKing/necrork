@@ -13,6 +13,9 @@ maintainer:     syd@cs-syd.eu
 copyright:      Copyright (c) 2020-2022 Tom Sydney Kerckhove
 license:        AllRightsReserved
 build-type:     Simple
+extra-source-files:
+    documentation.txt
+    options.nix
 
 source-repository head
   type: git
@@ -40,6 +43,7 @@ test-suite necrork-test
   main-is: Spec.hs
   other-modules:
       Necrork.APISpec
+      Necrork.OptParseSpec
       Paths_necrork_gen
   hs-source-dirs:
       test
@@ -52,5 +56,6 @@ test-suite necrork-test
     , genvalidity-sydtest-persistent
     , necrork
     , necrork-gen
+    , opt-env-conf-test
     , sydtest
   default-language: Haskell2010
