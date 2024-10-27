@@ -39,17 +39,14 @@
           (import (token-limiter-concurrent + "/nix/overlay.nix"))
         ];
       };
-      pkgsMusl = pkgs.pkgsMusl;
     in
     {
       overlays.${system} = import ./nix/overlay.nix;
       packages.${system} = {
         default = pkgs.necrorkRelease;
-        static = pkgsMusl.necrorkRelease;
       };
       checks.${system} = {
         release = self.packages.${system}.default;
-        static = self.packages.${system}.static;
         shell = self.devShells.${system}.default;
         pre-commit = pre-commit-hooks.lib.${system}.run {
           src = ./.;

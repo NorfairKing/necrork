@@ -11,40 +11,8 @@ with final.haskell.lib;
     };
 
   necrorkReleasePackages =
-    let
-      enableStatic = pkg:
-        if final.stdenv.hostPlatform.isMusl
-        then
-          overrideCabal pkg
-            (old: {
-              configureFlags = (old.configureFlags or [ ]) ++ [
-                "--ghc-option=-optl=-static"
-                # Static
-                "--extra-lib-dirs=${final.gmp6.override { withStatic = true; }}/lib"
-                "--extra-lib-dirs=${final.zlib.static}/lib"
-                "--extra-lib-dirs=${final.libffi.overrideAttrs (_: { dontDisableStatic = true; })}/lib"
-                # for -ltinfo
-                "--extra-lib-dirs=${(final.ncurses.override { enableStatic = true; })}/lib"
-              ];
-              enableSharedExecutables = false;
-              enableSharedLibraries = false;
-
-              postInstall = (old.postInstall or "") + ''
-                for b in $out/bin/*
-                do
-                  if ldd "$b"
-                  then
-                    echo "ldd succeeded on $b, which may mean that it is not statically linked"
-                    exit 1
-                  fi
-                done
-              '';
-            })
-        else pkg;
-
-    in
     mapAttrs
-      (_: pkg: justStaticExecutables (enableStatic pkg))
+      (_: pkg: justStaticExecutables pkg)
       final.haskellPackages.necrorkPackages;
 
   haskellPackages = prev.haskellPackages.override (old: {
