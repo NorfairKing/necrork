@@ -1,5 +1,11 @@
 {
   description = "necrork";
+
+  nixConfig = {
+    extra-substituters = "https://necrork.cachix.org";
+    extra-trusted-public-keys = "necrork.cachix.org-1:5BI2rwQ+nwO61CbDcPhy3W70ivFoSPRdnXhskEJwysM=";
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.05";
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
@@ -74,6 +80,10 @@
         ] ++ self.checks.${system}.pre-commit.enabledPackages;
         shellHook = self.checks.${system}.pre-commit.shellHook;
         DEVELOPMENT = "True";
+      };
+      nix-ci.cachix = {
+        name = "necrork";
+        public-key = "necrork.cachix.org-1:5BI2rwQ+nwO61CbDcPhy3W70ivFoSPRdnXhskEJwysM=";
       };
     };
 }
