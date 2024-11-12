@@ -28,6 +28,8 @@ import Data.Sequence (Seq, ViewL (..), (|>))
 import qualified Data.Sequence as Seq
 import Data.Set (Set)
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
+import Data.Version (showVersion)
 import Data.Void
 import Data.Word
 import Looper
@@ -35,6 +37,7 @@ import Necrork.Client
 import Network.HTTP.Client as HTTP
 import Network.HTTP.Client.TLS as HTTP
 import OptEnvConf
+import Paths_necrork (version)
 import UnliftIO
 
 withMNotifier ::
@@ -215,9 +218,22 @@ runNotifierOnce NotifierEnv {..} = go
             then queue
             else queue |> (True, peer)
 
+        makeNecrorkClientEnv :: NodeUrl -> ClientEnv
+        makeNecrorkClientEnv (NodeUrl burl) =
+          (mkClientEnv notifierEnvHttpManager burl)
+            { makeClientRequest = \burl' request' -> do
+                request <- defaultMakeClientRequest burl' request'
+                let headers =
+                      ( "User-Agent",
+                        TE.encodeUtf8 $ T.pack $ "necrork-" <> showVersion version
+                      )
+                        : requestHeaders request
+                pure $ request {requestHeaders = headers}
+            }
+
         contactPeerTheFirstTime :: NodeUrl -> m (Maybe (Set NodeUrl))
         contactPeerTheFirstTime nurl = do
-          let cenv = mkClientEnv notifierEnvHttpManager (unNodeUrl nurl)
+          let cenv = makeNecrorkClientEnv nurl
           let request =
                 PutSwitchRequest
                   { putSwitchRequestTimeout = notifierEnvTimeout,
@@ -250,7 +266,7 @@ runNotifierOnce NotifierEnv {..} = go
               pure $ Just putSwitchResponsePeers
         contactPeerToSayWeAreStillAlive :: NodeUrl -> m (Maybe ())
         contactPeerToSayWeAreStillAlive nurl = do
-          let cenv = mkClientEnv notifierEnvHttpManager (unNodeUrl nurl)
+          let cenv = makeNecrorkClientEnv nurl
           let request =
                 PutAliveRequest
                   {
