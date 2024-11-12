@@ -18,13 +18,6 @@ packages:
     subdir: token-limiter-concurrent
     url: https://github.com/NorfairKing/token-limiter-concurrent/archive/50466d2b9fae420e3f7bb5102187506dd64e6d23.tar.gz
 - completed:
-    hackage: servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
-    pantry-tree:
-      sha256: 04f12c7bef2c3f9a25d94eb9489752ed498db8e243069fe95838dbb51df1dcb3
-      size: 325
-  original:
-    hackage: servant-flatten-0.2@sha256:276896f7c5cdec5b8f8493f6205fded0cc602d050b58fdb09a6d7c85c3bb0837,1234
-- completed:
     name: safe-coloured-text
     pantry-tree:
       sha256: e570533758692db38e3765ba8e961d550351dcc7159bed9206b4f8ab8dfe78fb
