@@ -101,7 +101,7 @@ parseNotifierSettings = do
         reader $ maybeReader parseNodeUrl,
         name "url",
         metavar "URL",
-        valueWithShown defaultNodeUrl (showNodeUrl defaultNodeUrl)
+        valueWithShown showNodeUrl defaultNodeUrl
       ]
   notifierSettingLooperSettings <-
     parseLooperSettings
