@@ -74,7 +74,6 @@ data PostSyncRequest = PostSyncRequest
     postSyncRequestTimeout :: !(Maybe Word32),
     postSyncRequestNotifySettings :: !(Maybe NotifySettings),
     postSyncRequestNeedNotifySettings :: !Bool,
-    postSyncRequestNodeTimestamps :: !(Map NodeUrl (Map NodeUrl TimestampTuple)),
     postSyncRequestSwitchTimestamps :: !(Map SwitchName (Map NodeUrl Timestamp))
   }
   deriving stock (Show, Generic)
@@ -91,7 +90,6 @@ instance HasCodec PostSyncRequest where
         <*> optionalField "timeout" "How long after hearing from the sending node to consider it dead" .= postSyncRequestTimeout
         <*> optionalField "notify" "How to notify the admin of the sending node" .= postSyncRequestNotifySettings
         <*> optionalFieldWithOmittedDefault "settings" False "Whether notify settings are requested" .= postSyncRequestNeedNotifySettings
-        <*> optionalFieldWithOmittedDefault "nodes" M.empty "Node timestamps" .= postSyncRequestNodeTimestamps
         <*> optionalFieldWithOmittedDefault "switches" M.empty "Switch timestamps" .= postSyncRequestSwitchTimestamps
 
 -- Keep this small, it is sent a lot.
@@ -99,9 +97,7 @@ instance HasCodec PostSyncRequest where
 data PostSyncResponse = PostSyncResponse
   { postSyncResponseTimestamp :: !Timestamp,
     postSyncResponseTimeout :: !(Maybe Word32),
-    postSyncResponseNotifySettings :: !(Maybe NotifySettings),
-    postSyncResponseNodeTimestamps :: !(Map NodeUrl (Map NodeUrl TimestampTuple)),
-    postSyncResponseSwitchTimestamps :: !(Map SwitchName (Map NodeUrl Timestamp))
+    postSyncResponseNotifySettings :: !(Maybe NotifySettings)
   }
   deriving stock (Show, Generic)
   deriving (FromJSON, ToJSON) via (Autodocodec PostSyncResponse)
@@ -115,8 +111,6 @@ instance HasCodec PostSyncResponse where
         <$> requiredField "time" "Timestamp of responding according to the receiving node" .= postSyncResponseTimestamp
         <*> optionalField "timeout" "How long after hearing from the responding node to consider it dead" .= postSyncResponseTimeout
         <*> optionalField "notify" "How to notify an administrator if the responding node is considered dead" .= postSyncResponseNotifySettings
-        <*> optionalFieldWithOmittedDefault "nodes" M.empty "Node timestamps" .= postSyncResponseNodeTimestamps
-        <*> optionalFieldWithOmittedDefault "switches" M.empty "Switch timestamps" .= postSyncResponseSwitchTimestamps
 
 data NotifyIntraySettings = NotifyIntraySettings
   { notifyIntraySettingUsername :: Text,
