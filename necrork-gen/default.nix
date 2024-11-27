@@ -1,7 +1,7 @@
 { mkDerivation, base, genvalidity, genvalidity-containers
 , genvalidity-sydtest, genvalidity-sydtest-persistent
 , genvalidity-text, lib, necrork, opt-env-conf-test, QuickCheck
-, servant-client, sydtest, sydtest-discover
+, servant-client, sydtest, sydtest-discover, text
 }:
 mkDerivation {
   pname = "necrork-gen";
@@ -9,7 +9,7 @@ mkDerivation {
   src = ./.;
   libraryHaskellDepends = [
     base genvalidity genvalidity-containers genvalidity-text necrork
-    QuickCheck servant-client
+    QuickCheck servant-client text
   ];
   testHaskellDepends = [
     base genvalidity-sydtest genvalidity-sydtest-persistent necrork

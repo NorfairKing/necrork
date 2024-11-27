@@ -22,6 +22,7 @@ library:
     - genvalidity-text
     - necrork
     - servant-client
+    - text
 
 tests:
   necrork-test:

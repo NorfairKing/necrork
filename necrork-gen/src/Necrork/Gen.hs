@@ -7,6 +7,7 @@ import Data.GenValidity
 import Data.GenValidity.Containers ()
 import Data.GenValidity.Text ()
 import qualified Data.List.NonEmpty as NE
+import qualified Data.Text as T
 import Necrork.API
 import Servant.Client
 import Test.QuickCheck
@@ -31,7 +32,8 @@ instance GenValid Timestamp where
   genValid = genValidStructurallyWithoutExtraChecking
   shrinkValid = shrinkValidStructurallyWithoutExtraFiltering
 
-instance GenValid SwitchName
+instance GenValid SwitchName where
+  genValid = SwitchName . T.pack . NE.toList <$> genValid
 
 instance GenValid TimestampTuple where
   genValid = genValidStructurallyWithoutExtraChecking
