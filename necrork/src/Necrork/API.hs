@@ -142,7 +142,7 @@ parseNotifyIntraySettings = do
         metavar "USERNAME"
       ]
   notifyIntraySettingAccessKeySecret <-
-    setting
+    secretTextFileOrBareSetting
       [ help "Access key",
         name "key",
         reader str,

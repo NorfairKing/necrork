@@ -26,7 +26,7 @@ extra-deps:
     - autodocodec-nix
 
 - github: NorfairKing/opt-env-conf
-  commit: fdf861f7bdd7f6aff777e2780beb7a400bd97625
+  commit: 2a6d3505aec34aacd2bc41d688fdf752815d9916
   subdirs:
     - opt-env-conf
     - opt-env-conf-test
