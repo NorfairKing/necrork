@@ -7,16 +7,16 @@ packages:
 - completed:
     name: token-limiter-concurrent
     pantry-tree:
-      sha256: 5986d50691df8b37eb4e1542376f05d6cb30c5b43270b353dcc6adb42d8a1e76
+      sha256: 16f4a32ee50411443e0e0c5c266e1d5d442a85c2cace85ca17579eee7e6713f9
       size: 461
-    sha256: 0b44f95bf8983a89ff1404066df5127b41a44e9a9c6bc87e83eeedc508ffc93c
-    size: 10225
+    sha256: 2b83abca81d86df34431a8ec69f5c577b8ba974da0c6007028d2edf6421791a6
+    size: 10638
     subdir: token-limiter-concurrent
-    url: https://github.com/NorfairKing/token-limiter-concurrent/archive/50466d2b9fae420e3f7bb5102187506dd64e6d23.tar.gz
-    version: 0.1.0.0
+    url: https://github.com/NorfairKing/token-limiter-concurrent/archive/e290241747f1549c74df255b2e0bbcd0dec7b60a.tar.gz
+    version: 0.2.0.1
   original:
     subdir: token-limiter-concurrent
-    url: https://github.com/NorfairKing/token-limiter-concurrent/archive/50466d2b9fae420e3f7bb5102187506dd64e6d23.tar.gz
+    url: https://github.com/NorfairKing/token-limiter-concurrent/archive/e290241747f1549c74df255b2e0bbcd0dec7b60a.tar.gz
 - completed:
     name: safe-coloured-text
     pantry-tree:

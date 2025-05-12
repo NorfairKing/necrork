@@ -167,11 +167,11 @@
     "token-limiter-concurrent": {
       "flake": false,
       "locked": {
-        "lastModified": 1728775417,
-        "narHash": "sha256-8hgfjvs+b+dOaZJEdYYDDsLbNhJxmYb0YancKWXuPPY=",
+        "lastModified": 1747033946,
+        "narHash": "sha256-0V2Diw2YVYirOvx0OtyjDlmgHSH8nU+WUXgIzO05fZc=",
         "owner": "NorfairKing",
         "repo": "token-limiter-concurrent",
-        "rev": "81ebf686f8fc12b87629060ea44bb75b076b0396",
+        "rev": "e290241747f1549c74df255b2e0bbcd0dec7b60a",
         "type": "github"
       },
       "original": {

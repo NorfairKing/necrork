@@ -138,6 +138,7 @@ data NotifierEnv = NotifierEnv
     notifierEnvNotifySettings :: !NotifySettings,
     -- To limit retries
     notifierEnvTokenLimiter :: !TokenLimiter,
+    notifierEnvTokensPerDebit :: !Count,
     -- Peers and whether it's the first time we contact them.
     notifierEnvPeerQueue :: !(TVar (Seq (Bool, NodeUrl)))
   }
@@ -149,18 +150,17 @@ makeNotifierEnv man NotifierSettings {..} = do
       notifierEnvLooperSettings = notifierSettingLooperSettings
       notifierEnvTimeout = fromMaybe (2 * ceiling (looperSetPeriod notifierSettingLooperSettings)) notifierSettingTimeout
       notifierEnvNotifySettings = notifierSettingNotifySettings
-  notifierEnvTokenLimiter <-
-    liftIO $
-      makeTokenLimiter
+      notifierEnvTokensPerDebit = ceiling (looperSetPeriod notifierSettingLooperSettings)
+      tokenLimitConfig =
         TokenLimitConfig
           { -- Try two requests immediately
-            tokenLimitConfigInitialTokens = 20,
-            tokenLimitConfigMaxTokens = 20,
-            -- Try a total of 10 requests per period
-            tokenLimitConfigTokensPerSecond =
-              round $
-                100 / looperSetPeriod notifierSettingLooperSettings
+            tokenLimitConfigInitialTokens = 2 * notifierEnvTokensPerDebit,
+            -- Two requests in a row maximum
+            tokenLimitConfigMaxTokens = 2 * notifierEnvTokensPerDebit,
+            -- Maximum 5 requests per period
+            tokenLimitConfigTokensPerSecond = 5
           }
+  notifierEnvTokenLimiter <- liftIO $ makeTokenLimiter tokenLimitConfig
   notifierEnvPeerQueue <- newTVarIO (Seq.singleton (True, notifierSettingNodeUrl))
   pure NotifierEnv {..}
 
@@ -190,7 +190,7 @@ runNotifierOnce NotifierEnv {..} = go
         -- if it does because this node will be considered dead.
         EmptyL -> logWarnN "No peers left. This indicates a bug in necrork-sdk."
         ((firstTime, peer) :< restPeers) -> do
-          liftIO $ void $ waitDebit notifierEnvTokenLimiter 10
+          liftIO $ void $ waitDebit notifierEnvTokenLimiter notifierEnvTokensPerDebit
           (newQueue, success) <-
             if firstTime
               then do
@@ -262,15 +262,11 @@ runNotifierOnce NotifierEnv {..} = go
                       show err
                     ]
               pure Nothing
-            Right PutSwitchResponse {..} -> do
-              pure $ Just putSwitchResponsePeers
+            Right PutSwitchResponse {..} -> pure $ Just putSwitchResponsePeers
         contactPeerToSayWeAreStillAlive :: NodeUrl -> m (Maybe ())
         contactPeerToSayWeAreStillAlive nurl = do
           let cenv = makeNecrorkClientEnv nurl
-          let request =
-                PutAliveRequest
-                  {
-                  }
+          let request = PutAliveRequest
           logInfoN $
             T.pack $
               unwords

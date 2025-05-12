@@ -8,7 +8,7 @@ ghc-options:
 
 extra-deps:
 - github: NorfairKing/token-limiter-concurrent
-  commit: 50466d2b9fae420e3f7bb5102187506dd64e6d23
+  commit: e290241747f1549c74df255b2e0bbcd0dec7b60a
   subdirs:
     - token-limiter-concurrent
 - github: NorfairKing/safe-coloured-text

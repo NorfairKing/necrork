@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           necrork
-version:        0.0.0.0
+version:        0.1.0.0
 homepage:       https://github.com/NorfairKing/necrork#readme
 bug-reports:    https://github.com/NorfairKing/necrork/issues
 author:         Tom Sydney Kerckhove
@@ -13,6 +13,8 @@ maintainer:     syd@cs-syd.eu
 copyright:      Copyright (c) 2024 Tom Sydney Kerckhove
 license:        AllRightsReserved
 build-type:     Simple
+extra-source-files:
+    CHANGELOG.md
 
 source-repository head
   type: git
