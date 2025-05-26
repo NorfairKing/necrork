@@ -7,7 +7,7 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-25.05";
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     safe-coloured-text.url = "github:NorfairKing/safe-coloured-text";
     safe-coloured-text.flake = false;
