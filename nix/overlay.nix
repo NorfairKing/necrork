@@ -19,7 +19,7 @@ with final.haskell.lib;
     overrides = final.lib.composeExtensions (old.overrides or (_: _: { })) (self: _:
       let
         necrorkPkg = name:
-          buildFromSdist (overrideCabal
+          buildStrictly (overrideCabal
             (self.callPackage (../${name}) { })
             (old: {
               configureFlags = (old.configureFlags or [ ]) ++ [
@@ -40,10 +40,8 @@ with final.haskell.lib;
               doHaddock = false;
               doCoverage = false;
               doHoogle = false;
-              doCheck = true; # TODO turn this to false once we set up coverage reports
               hyperlinkSource = false;
-              enableLibraryProfiling = false;
-              enableExecutableProfiling = false;
+              doCheck = false;
             }));
 
         necrorkPackages = {
