@@ -8,7 +8,7 @@ ghc-options:
 
 extra-deps:
 - github: NorfairKing/token-limiter-concurrent
-  commit: e290241747f1549c74df255b2e0bbcd0dec7b60a
+  commit: fcc95f137696ddf23b63f32a6d697ba5a83a51b2
   subdirs:
     - token-limiter-concurrent
 - github: NorfairKing/safe-coloured-text
@@ -32,7 +32,7 @@ extra-deps:
     - opt-env-conf-test
 
 - github: NorfairKing/looper
-  commit: 8dcec153ccdb61db9603b6a1d6dee6c551dcc329
+  commit: eb24595196b08b0dcef7f6dbca65637cc26f8e6e
   subdirs:
     - looper
 nix:

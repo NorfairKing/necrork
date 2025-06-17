@@ -106,6 +106,7 @@ parseNotifierSettings = do
   notifierSettingLooperSettings <-
     parseLooperSettings
       "notifier"
+      (looperSetEnabled defaultNotifierLooperSettings)
       (looperSetPhase defaultNotifierLooperSettings)
       (looperSetPeriod defaultNotifierLooperSettings)
   notifierSettingTimeout <-

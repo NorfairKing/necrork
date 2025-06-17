@@ -40,11 +40,11 @@
     "looper": {
       "flake": false,
       "locked": {
-        "lastModified": 1748255668,
-        "narHash": "sha256-hgOiMrnHxmRjoCibdn57xyv/JQMXuAYn1LZ70Xz5iA0=",
+        "lastModified": 1750169238,
+        "narHash": "sha256-jidJTE1+F+k7tXruylAhHDzKxoMZHn3CndWAPPT+jg4=",
         "owner": "NorfairKing",
         "repo": "looper",
-        "rev": "2098cd158ab3e00f7ca74f00cfe0f4728c05f955",
+        "rev": "eb24595196b08b0dcef7f6dbca65637cc26f8e6e",
         "type": "github"
       },
       "original": {
