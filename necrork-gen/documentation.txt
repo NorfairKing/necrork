@@ -1,4 +1,4 @@
-[36mUsage: [m[33mnecrork[m [36m[[m[37m--necrork-switch[m [33mSWITCH_NAME[m [36m[[m[37m--necrork-url[m [33mURL[m[36m][m [36m[[m[37m--necrork-(enable|disable)-notifier[m[36m][m [36m[[m[37m--necrork-notifier-phase[m [33mSECONDS[m[36m][m [36m[[m[37m--necrork-notifier-period[m [33mSECONDS[m[36m][m [36m[[m[37m--necrork-timeout[m [33mSECONDS[m[36m][m [37m--necrork-intray-username[m [33mUSERNAME[m [36m[[m[37m--necrork-intray-key[m [33mKEY[m [36m|[m [37m--necrork-intray-key-file[m [33mFILE_PATH[m[36m][m[36m][m
+[36mUsage: [m[33mnecrork[m [36m[[m[37m--necrork-switch[m [33mSWITCH_NAME[m [36m[[m[37m--necrork-url[m [33mURL[m[36m][m [36m[[m[37m--necrork-(enable|disable)-notifier[m[36m][m [36m[[m[37m--necrork-notifier-phase[m [33mSECONDS[m[36m][m [36m[[m[37m--necrork-notifier-period[m [33mSECONDS[m[36m][m [36m[[m[37m--necrork-timeout[m [33mSECONDS[m[36m][m [37m--necrork-intray-username[m [33mUSERNAME[m [36m[[m[37m--necrork-intray-key[m [33mKEY[m [36m|[m [37m--necrork-intray-key-file[m [33mKEY[m[36m][m[36m][m
 
 [36mAll settings[m:
   [34mShow this help text[m
@@ -61,9 +61,9 @@
 
   [34mAccess key[m
   option: [37m--necrork-intray-key[m [33mKEY[m
-  option: [37m--necrork-intray-key-file[m [33mFILE_PATH[m
+  option: [37m--necrork-intray-key-file[m [33mKEY[m
   env: [37mNECRORK_INTRAY_KEY[m [33mKEY[m
-  env: [37mNECRORK_INTRAY_KEY_FILE[m [33mFILE_PATH[m
+  env: [37mNECRORK_INTRAY_KEY_FILE[m [33mKEY[m
   config:
     [37mnecrork.intray.key[m: # [32mor null[m
       [33m<string>[m
@@ -85,15 +85,15 @@
   [37m--necrork-intray-key-file[m           [34mAccess key[m                                                                                                    
 
 [36mEnvironment Variables[m:
-  [37mNECRORK_SWITCH[m [33mSWITCH_NAME[m          [34mName of the necrork switch[m                                                                                      
-  [37mNECRORK_URL[m [33mURL[m                     [34mBase url of the necrork server[m                                                default: [33mhttps://necrork.cs-syd.eu[m
-  [37mNECRORK_NOTIFIER_ENABLE[m [33mBOOL[m        [34menable the notifier looper[m                                                                                      
-  [37mNECRORK_NOTIFIER_PHASE[m [33mSECONDS[m      [34mphase of the notifier looper in seconds[m                                       default: [33m0s[m                       
-  [37mNECRORK_NOTIFIER_PERIOD[m [33mSECONDS[m     [34mperiod of the notifier looper in seconds[m                                      default: [33m300s[m                     
-  [37mNECRORK_TIMEOUT[m [33mSECONDS[m             [34mHow long after last hearing from this switch, nodes should consider it dead[m                                     
-  [37mNECRORK_INTRAY_USERNAME[m [33mUSERNAME[m    [34mUsername[m                                                                                                        
-  [37mNECRORK_INTRAY_KEY[m [33mKEY[m              [34mAccess key[m                                                                                                      
-  [37mNECRORK_INTRAY_KEY_FILE[m [33mFILE_PATH[m   [34mAccess key[m                                                                                                      
+  [37mNECRORK_SWITCH[m [33mSWITCH_NAME[m         [34mName of the necrork switch[m                                                                                      
+  [37mNECRORK_URL[m [33mURL[m                    [34mBase url of the necrork server[m                                                default: [33mhttps://necrork.cs-syd.eu[m
+  [37mNECRORK_NOTIFIER_ENABLE[m [33mBOOL[m       [34menable the notifier looper[m                                                                                      
+  [37mNECRORK_NOTIFIER_PHASE[m [33mSECONDS[m     [34mphase of the notifier looper in seconds[m                                       default: [33m0s[m                       
+  [37mNECRORK_NOTIFIER_PERIOD[m [33mSECONDS[m    [34mperiod of the notifier looper in seconds[m                                      default: [33m300s[m                     
+  [37mNECRORK_TIMEOUT[m [33mSECONDS[m            [34mHow long after last hearing from this switch, nodes should consider it dead[m                                     
+  [37mNECRORK_INTRAY_USERNAME[m [33mUSERNAME[m   [34mUsername[m                                                                                                        
+  [37mNECRORK_INTRAY_KEY[m [33mKEY[m             [34mAccess key[m                                                                                                      
+  [37mNECRORK_INTRAY_KEY_FILE[m [33mKEY[m        [34mAccess key[m                                                                                                      
 
 [36mConfiguration Values[m:
   [34mName of the necrork switch[m
