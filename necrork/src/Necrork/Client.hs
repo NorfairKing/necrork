@@ -10,5 +10,5 @@ import Servant.API as X
 import Servant.Client as X
 import Servant.Client.Generic
 
-necrorkClient :: FooBarRoutes (AsClientT ClientM)
+necrorkClient :: NecrorkRoutes (AsClientT ClientM)
 necrorkClient = genericClient

@@ -35,9 +35,10 @@ import OptEnvConf
 import Servant.API
 import Servant.API.Generic
 
-data FooBarRoutes route = FooBarRoutes
+data NecrorkRoutes route = NecrorkRoutes
   { postSync :: !(route :- PostSync),
     putSwitch :: !(route :- PutSwitch),
+    deleteSwitch :: !(route :- DeleteSwitch),
     putAlive :: !(route :- PutAlive),
     getAlive :: !(route :- GetAlive)
   }
@@ -197,7 +198,7 @@ instance HasCodec PutSwitchRequest where
   codec =
     object "PutSwitchRequest" $
       PutSwitchRequest
-        <$> requiredField "timeout" "How long after last hearing from the switch to consider it dead" .= putSwitchRequestTimeout
+        <$> requiredField "timeout" "How long after last hearing from the switch to consider it dead, in seconds" .= putSwitchRequestTimeout
         <*> requiredField "notify" "How to notify the administrator when the switch dies" .= putSwitchRequestNotifySettings
 
 -- Parsing must stay backward compatible
@@ -214,6 +215,41 @@ instance HasCodec PutSwitchResponse where
     object "PutSwitchResponse" $
       PutSwitchResponse
         <$> optionalFieldWithOmittedDefault "peers" S.empty "Alternative peers that the switch can contact" .= putSwitchResponsePeers
+
+type DeleteSwitch =
+  "switch"
+    :> Capture "switch" SwitchName
+    :> ReqBody '[JSON] DeleteSwitchRequest
+    :> Delete '[JSON] DeleteSwitchResponse
+
+-- Must stay backwards compatible
+data DeleteSwitchRequest = DeleteSwitchRequest
+  {
+  }
+  deriving stock (Show, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec DeleteSwitchRequest)
+
+instance Validity DeleteSwitchRequest
+
+instance HasCodec DeleteSwitchRequest where
+  codec =
+    object "DeleteSwitchRequest" $
+      pure DeleteSwitchRequest
+
+-- Parsing must stay backward compatible
+data DeleteSwitchResponse = DeleteSwitchResponse
+  { deleteSwitchResponseDeleted :: Bool
+  }
+  deriving stock (Show, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec DeleteSwitchResponse)
+
+instance Validity DeleteSwitchResponse
+
+instance HasCodec DeleteSwitchResponse where
+  codec =
+    object "DeleteSwitchResponse" $
+      DeleteSwitchResponse
+        <$> requiredField "deleted" "True if the switch existed and was deleted, false if it didn't exist." .= deleteSwitchResponseDeleted
 
 type PutAlive =
   "alive"
