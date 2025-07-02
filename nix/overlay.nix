@@ -45,8 +45,9 @@ with final.haskell.lib;
             }));
 
         necrorkPackages = {
-          necrork-gen = necrorkPkg "necrork-gen";
           necrork = necrorkPkg "necrork";
+          necrork-cli = necrorkPkg "necrork-cli";
+          necrork-gen = necrorkPkg "necrork-gen";
         };
       in
       {

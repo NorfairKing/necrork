@@ -4,6 +4,7 @@
 
 module Necrork.API.SwitchName
   ( SwitchName (..),
+    mkSwitchName,
   )
 where
 
@@ -33,7 +34,7 @@ newtype SwitchName = SwitchName {unSwitchName :: Text}
     )
 
 instance HasCodec SwitchName where
-  codec = dimapCodec SwitchName unSwitchName codec
+  codec = bimapCodec (prettyValidate . SwitchName) unSwitchName codec
 
 instance Validity SwitchName where
   validate sn@(SwitchName t) =
@@ -41,3 +42,6 @@ instance Validity SwitchName where
       [ genericValidate sn,
         declare "is not empty" $ not $ T.null t
       ]
+
+mkSwitchName :: Text -> Maybe SwitchName
+mkSwitchName = constructValid . SwitchName
