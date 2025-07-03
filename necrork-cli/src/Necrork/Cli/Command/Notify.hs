@@ -19,16 +19,12 @@ runNecrorkNotify Cli.NotifySettings {..} = do
   errsOrResponses <-
     forEachPeer $
       case notifySettingPutSwitchRequest of
-        Just putSwitchRequest -> do
-          PutSwitchResponse {} <- putSwitch necrorkClient switchName putSwitchRequest
-          pure ()
-        Nothing -> do
-          PutAliveResponse {} <- putAlive necrorkClient switchName PutAliveRequest
-          pure ()
+        Just putSwitchRequest -> putSwitch necrorkClient switchName putSwitchRequest
+        Nothing -> putAlive necrorkClient switchName
 
   let printResults =
         mapM_
-          ( \(nurl, ()) ->
+          ( \(nurl, NoContent) ->
               logInfoN $
                 T.pack $
                   unwords

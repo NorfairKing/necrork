@@ -19,7 +19,4 @@ spec = do
   genValidSpec @NotifyIntraySettings
   genValidSpec @NotifySettings
   genValidSpec @PutSwitchRequest
-  genValidSpec @PutSwitchResponse
-  genValidSpec @PutAliveRequest
-  genValidSpec @PutAliveResponse
   genValidSpec @GetAliveResponse

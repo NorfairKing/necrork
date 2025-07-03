@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Necrork.Cli.Command.Delete (runNecrorkDelete) where
 
@@ -16,7 +15,7 @@ runNecrorkDelete :: SwitchName -> CliM ()
 runNecrorkDelete switchName = do
   errsOrResponses <-
     forEachPeer $
-      deleteSwitch necrorkClient switchName DeleteSwitchRequest {..}
+      deleteSwitch necrorkClient switchName
 
   let printResults =
         mapM_

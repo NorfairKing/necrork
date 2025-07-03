@@ -2,7 +2,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
@@ -36,30 +35,14 @@ import Servant.API
 import Servant.API.Generic
 
 data NecrorkRoutes route = NecrorkRoutes
-  { postSync :: !(route :- PostSync),
+  { getPeers :: !(route :- GetPeers),
+    postSync :: !(route :- PostSync),
     putSwitch :: !(route :- PutSwitch),
     deleteSwitch :: !(route :- DeleteSwitch),
     putAlive :: !(route :- PutAlive),
     getAlive :: !(route :- GetAlive)
   }
   deriving (Generic)
-
-data TimestampTuple = TimestampTuple
-  { timestampTupleHearing :: !Timestamp,
-    timestampTupleHeard :: !Timestamp
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving (FromJSON, ToJSON) via (Autodocodec TimestampTuple)
-
-instance Validity TimestampTuple
-
-instance HasCodec TimestampTuple where
-  codec = bimapCodec f g $ listCodec codec
-    where
-      f = \case
-        [timestampTupleHearing, timestampTupleHeard] -> Right TimestampTuple {..}
-        _ -> Left "Couldn't parse timestamp tuple"
-      g TimestampTuple {..} = [timestampTupleHearing, timestampTupleHeard]
 
 type PostSync =
   "sync"
@@ -178,11 +161,31 @@ instance HasParser NotifySettings where
       [ subAll "intray" $ NotifyIntray <$> settingsParser
       ]
 
+type GetPeers =
+  "peers"
+    :> Get '[JSON] GetPeersResponse
+
+-- Must stay backwards compatible
+data GetPeersResponse = GetPeersResponse
+  { getPeersResponsePeers :: !(Set NodeUrl)
+  }
+  deriving stock (Show, Generic)
+  deriving (FromJSON, ToJSON) via (Autodocodec GetPeersResponse)
+
+instance Validity GetPeersResponse
+
+instance HasCodec GetPeersResponse where
+  codec =
+    object "GetPeersResponse" $
+      GetPeersResponse
+        <$> optionalFieldWithOmittedDefault "peers" S.empty "Set of peers that the node knows about" .= getPeersResponsePeers
+
+-- Must stay small and backwards compatible.
 type PutSwitch =
   "switch"
     :> Capture "switch" SwitchName
     :> ReqBody '[JSON] PutSwitchRequest
-    :> Put '[JSON] PutSwitchResponse
+    :> PutNoContent
 
 -- Must stay backwards compatible
 data PutSwitchRequest = PutSwitchRequest
@@ -212,40 +215,10 @@ instance HasParser PutSwitchRequest where
         ]
       <*> settingsParser
 
--- Parsing must stay backward compatible
-data PutSwitchResponse = PutSwitchResponse
-  { putSwitchResponsePeers :: !(Set NodeUrl)
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via (Autodocodec PutSwitchResponse)
-
-instance Validity PutSwitchResponse
-
-instance HasCodec PutSwitchResponse where
-  codec =
-    object "PutSwitchResponse" $
-      PutSwitchResponse
-        <$> optionalFieldWithOmittedDefault "peers" S.empty "Alternative peers that the switch can contact" .= putSwitchResponsePeers
-
 type DeleteSwitch =
   "switch"
     :> Capture "switch" SwitchName
-    :> ReqBody '[JSON] DeleteSwitchRequest
     :> Delete '[JSON] DeleteSwitchResponse
-
--- Must stay backwards compatible
-data DeleteSwitchRequest = DeleteSwitchRequest
-  {
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via (Autodocodec DeleteSwitchRequest)
-
-instance Validity DeleteSwitchRequest
-
-instance HasCodec DeleteSwitchRequest where
-  codec =
-    object "DeleteSwitchRequest" $
-      pure DeleteSwitchRequest
 
 -- Parsing must stay backward compatible
 data DeleteSwitchResponse = DeleteSwitchResponse
@@ -262,40 +235,11 @@ instance HasCodec DeleteSwitchResponse where
       DeleteSwitchResponse
         <$> requiredField "deleted" "True if the switch existed and was deleted, false if it didn't exist." .= deleteSwitchResponseDeleted
 
+-- Must stay small and backwards compatible.
 type PutAlive =
   "alive"
     :> Capture "switch" SwitchName
-    :> ReqBody '[JSON] PutAliveRequest
-    :> Put '[JSON] PutAliveResponse
-
--- Must stay backwards compatible
-data PutAliveRequest = PutAliveRequest
-  {
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via (Autodocodec PutAliveRequest)
-
-instance Validity PutAliveRequest
-
-instance HasCodec PutAliveRequest where
-  codec =
-    object "PutAliveRequest" $
-      pure PutAliveRequest
-
--- Keep this small, it is sent a lot.
--- Parsing must stay backward compatible
-data PutAliveResponse = PutAliveResponse
-  {
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via (Autodocodec PutAliveResponse)
-
-instance Validity PutAliveResponse
-
-instance HasCodec PutAliveResponse where
-  codec =
-    object "PutAliveResponse" $
-      pure PutAliveResponse
+    :> PutNoContent
 
 type GetAlive =
   "alive"

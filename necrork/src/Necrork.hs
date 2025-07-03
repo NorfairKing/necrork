@@ -250,9 +250,9 @@ runNotifierOnce NotifierEnv {..} = go
                 ]
           errOrResult <-
             liftIO $
-              runClientM
-                (putSwitch necrorkClient notifierEnvSwitchName request)
-                cenv
+              flip runClientM cenv $ do
+                NoContent <- putSwitch necrorkClient notifierEnvSwitchName request
+                getPeers necrorkClient
           case errOrResult of
             Left err -> do
               logWarnN $
@@ -263,11 +263,10 @@ runNotifierOnce NotifierEnv {..} = go
                       show err
                     ]
               pure Nothing
-            Right PutSwitchResponse {..} -> pure $ Just putSwitchResponsePeers
+            Right GetPeersResponse {..} -> pure $ Just getPeersResponsePeers
         contactPeerToSayWeAreStillAlive :: NodeUrl -> m (Maybe ())
         contactPeerToSayWeAreStillAlive nurl = do
           let cenv = makeNecrorkClientEnv nurl
-          let request = PutAliveRequest
           logInfoN $
             T.pack $
               unwords
@@ -280,7 +279,7 @@ runNotifierOnce NotifierEnv {..} = go
           errOrResult <-
             liftIO $
               runClientM
-                (putAlive necrorkClient notifierEnvSwitchName request)
+                (putAlive necrorkClient notifierEnvSwitchName)
                 cenv
           case errOrResult of
             Left err -> do
@@ -292,4 +291,4 @@ runNotifierOnce NotifierEnv {..} = go
                       show err
                     ]
               pure Nothing
-            Right PutAliveResponse -> pure (Just ())
+            Right NoContent -> pure (Just ())
