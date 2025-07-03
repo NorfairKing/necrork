@@ -8,19 +8,27 @@ import Control.Monad.Logger
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Text as T
 import Necrork.Cli.Env
+import Necrork.Cli.OptParse as Cli
 import Necrork.Client
 import System.Exit
 import UnliftIO
 
-runNecrorkNotify :: SwitchName -> CliM ()
-runNecrorkNotify switchName = do
+runNecrorkNotify :: Cli.NotifySettings -> CliM ()
+runNecrorkNotify Cli.NotifySettings {..} = do
+  let switchName = notifySettingSwitchName
   errsOrResponses <-
     forEachPeer $
-      putAlive necrorkClient switchName PutAliveRequest {..}
+      case notifySettingPutSwitchRequest of
+        Just putSwitchRequest -> do
+          PutSwitchResponse {} <- putSwitch necrorkClient switchName putSwitchRequest
+          pure ()
+        Nothing -> do
+          PutAliveResponse {} <- putAlive necrorkClient switchName PutAliveRequest
+          pure ()
 
   let printResults =
         mapM_
-          ( \(nurl, PutAliveResponse {}) ->
+          ( \(nurl, ()) ->
               logInfoN $
                 T.pack $
                   unwords

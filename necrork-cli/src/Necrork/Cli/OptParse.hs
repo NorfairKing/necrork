@@ -13,7 +13,8 @@ import Autodocodec
 import Control.Monad.Logger
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.Text as T
-import Necrork.API
+import Necrork.API (NodeUrl, SwitchName, mkSwitchName, parseNodeUrl)
+import qualified Necrork.API as API
 import OptEnvConf
 import Path.IO
 import Paths_necrork_cli (version)
@@ -64,7 +65,7 @@ parseSettings = do
   pure Settings {..}
 
 data Dispatch
-  = DispatchNotify !SwitchName
+  = DispatchNotify !NotifySettings
   | DispatchDelete !SwitchName
   deriving (Show)
 
@@ -72,22 +73,33 @@ instance HasParser Dispatch where
   settingsParser =
     commands
       [ command "notify" "Notify that this switch is alive" $
-          DispatchNotify
-            <$> setting
-              [ help "Name of the switch to mark as alive.",
-                argument,
-                reader $ maybeReader $ mkSwitchName . T.pack,
-                metavar "NAME"
-              ],
+          DispatchNotify <$> settingsParser,
         command "delete" "Delete a switch" $
-          DispatchDelete
-            <$> setting
-              [ help "Name of the switch to delete.",
-                argument,
-                reader $ maybeReader $ mkSwitchName . T.pack,
-                metavar "NAME"
-              ]
+          DispatchDelete <$> parseSwitchName
       ]
+
+data NotifySettings = NotifySettings
+  { notifySettingSwitchName :: !SwitchName,
+    notifySettingPutSwitchRequest :: !(Maybe API.PutSwitchRequest)
+  }
+  deriving (Show)
+
+instance HasParser NotifySettings where
+  settingsParser = do
+    notifySettingSwitchName <- parseSwitchName
+    notifySettingPutSwitchRequest <- optional $ allOrNothing settingsParser
+    pure NotifySettings {..}
+
+parseSwitchName :: Parser SwitchName
+parseSwitchName =
+  setting
+    [ help "Name of the switch",
+      argument,
+      reader $ maybeReader $ mkSwitchName . T.pack,
+      conf "switch",
+      env "SWITCH",
+      metavar "NAME"
+    ]
 
 instance HasParser LogLevel where
   settingsParser =

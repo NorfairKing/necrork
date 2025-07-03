@@ -201,6 +201,17 @@ instance HasCodec PutSwitchRequest where
         <$> requiredField "timeout" "How long after last hearing from the switch to consider it dead, in seconds" .= putSwitchRequestTimeout
         <*> requiredField "notify" "How to notify the administrator when the switch dies" .= putSwitchRequestNotifySettings
 
+instance HasParser PutSwitchRequest where
+  settingsParser =
+    PutSwitchRequest
+      <$> setting
+        [ help "Timeout in seconds after which the switch is considered dead",
+          name "timeout",
+          reader auto,
+          metavar "TIMEOUT"
+        ]
+      <*> settingsParser
+
 -- Parsing must stay backward compatible
 data PutSwitchResponse = PutSwitchResponse
   { putSwitchResponsePeers :: !(Set NodeUrl)
