@@ -23,6 +23,7 @@ library
       Necrork.Cli
       Necrork.Cli.Command.Delete
       Necrork.Cli.Command.Notify
+      Necrork.Cli.Env
       Necrork.Cli.OptParse
   other-modules:
       Paths_necrork_cli
@@ -32,9 +33,11 @@ library
       base >=4.7 && <5
     , http-client
     , http-client-tls
+    , mtl
     , necrork
     , opt-env-conf
     , path-io
+    , servant-client
     , text
     , unliftio
   default-language: Haskell2010

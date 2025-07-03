@@ -14,8 +14,10 @@ library:
   dependencies:
     - http-client
     - http-client-tls
+    - mtl
     - necrork
     - opt-env-conf
+    - servant-client
     - opt-env-conf
     - path-io
     - text
