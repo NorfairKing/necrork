@@ -22,6 +22,7 @@ library
   exposed-modules:
       Necrork.Cli
       Necrork.Cli.Command.Delete
+      Necrork.Cli.Command.Notify
       Necrork.Cli.OptParse
   other-modules:
       Paths_necrork_cli

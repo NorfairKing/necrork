@@ -57,13 +57,23 @@ parseSettings = do
       ]
   pure Settings {..}
 
-data Dispatch = DispatchDelete !SwitchName
+data Dispatch
+  = DispatchNotify !SwitchName
+  | DispatchDelete !SwitchName
   deriving (Show)
 
 instance HasParser Dispatch where
   settingsParser =
     commands
-      [ command "delete" "Delete a switch" $
+      [ command "notify" "Notify that this switch is alive" $
+          DispatchNotify
+            <$> setting
+              [ help "Name of the switch to mark as alive.",
+                argument,
+                reader $ maybeReader $ mkSwitchName . T.pack,
+                metavar "NAME"
+              ],
+        command "delete" "Delete a switch" $
           DispatchDelete
             <$> setting
               [ help "Name of the switch to delete.",
