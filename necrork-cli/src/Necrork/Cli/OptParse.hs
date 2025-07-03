@@ -1,5 +1,7 @@
 {-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -7,6 +9,8 @@
 
 module Necrork.Cli.OptParse where
 
+import Autodocodec
+import Control.Monad.Logger
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.Text as T
 import Necrork.API
@@ -27,7 +31,8 @@ instance HasParser Instructions where
         <*> settingsParser
 
 data Settings = Settings
-  { settingPeers :: !(NonEmpty NodeUrl)
+  { settingLogLevel :: !LogLevel,
+    settingPeers :: !(NonEmpty NodeUrl)
   }
   deriving (Show)
 
@@ -37,6 +42,7 @@ instance HasParser Settings where
 {-# ANN parseSettings ("NOCOVER" :: String) #-}
 parseSettings :: Parser Settings
 parseSettings = do
+  settingLogLevel <- settingsParser
   settingPeers <-
     choice
       [ someNonEmpty $
@@ -81,4 +87,31 @@ instance HasParser Dispatch where
                 reader $ maybeReader $ mkSwitchName . T.pack,
                 metavar "NAME"
               ]
+      ]
+
+instance HasParser LogLevel where
+  settingsParser =
+    setting
+      [ help "Minimal severity of log messages",
+        reader logLevelReader,
+        value LevelInfo,
+        name "log-level",
+        metavar "LOG_LEVEL",
+        example "Info"
+      ]
+    where
+      logLevelReader = eitherReader $ \case
+        "Debug" -> Right LevelDebug
+        "Info" -> Right LevelInfo
+        "Warn" -> Right LevelWarn
+        "Error" -> Right LevelError
+        s -> Left $ "Unknown LogLevel: " <> show s
+
+instance HasCodec LogLevel where
+  codec =
+    stringConstCodec
+      [ (LevelDebug, "Debug"),
+        (LevelInfo, "Info"),
+        (LevelWarn, "Warn"),
+        (LevelError, "Error")
       ]

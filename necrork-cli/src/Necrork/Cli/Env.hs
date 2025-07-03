@@ -1,12 +1,14 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Necrork.Cli.Env where
 
-import Control.Monad
+import Control.Monad.Logger
 import Control.Monad.Reader
+import qualified Data.ByteString.Char8 as SB8
 import Data.Either (partitionEithers)
 import Data.List.NonEmpty (NonEmpty (..))
 import qualified Data.List.NonEmpty as NE
@@ -18,18 +20,27 @@ import Necrork.Client
 import Network.HTTP.Client as HTTP
 import Network.HTTP.Client.TLS as HTTP
 import Paths_necrork_cli (version)
-import Servant.Client
+import Text.Colour
 import UnliftIO
 
 newtype CliM a = CliM
-  { unCliM :: ReaderT Env IO a
+  { unCliM :: ReaderT Env (LoggingT IO) a
   }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadUnliftIO, MonadReader Env)
+  deriving
+    ( Functor,
+      Applicative,
+      Monad,
+      MonadIO,
+      MonadUnliftIO,
+      MonadReader Env,
+      MonadLogger,
+      MonadLoggerIO
+    )
 
 runCliM :: Settings -> CliM a -> IO a
 runCliM settings func =
   withEnv settings $ \env ->
-    runReaderT (unCliM func) env
+    runMyLoggingT (runReaderT (unCliM func) env)
 
 data Env = Env
   { envHttpManager :: !HTTP.Manager,
@@ -89,3 +100,45 @@ partitionZipped =
           Left b -> Left (a, b)
           Right c -> Right (a, c)
       )
+
+runMyLoggingT :: LoggingT IO a -> IO a
+runMyLoggingT func = runLoggingT func developmentLogFunc
+  where
+    developmentLogFunc loc source level msg =
+      SB8.hPutStrLn stderr $ fromLogStr $ makeLogStr loc source level msg
+
+makeLogStr :: Loc -> LogSource -> LogLevel -> LogStr -> LogStr
+makeLogStr _ source level msg =
+  mconcat
+    [ toLogStr $
+        renderChunksUtf8BSBuilder With24BitColours $
+          map
+            (logLevelColour level)
+            [ "[",
+              logLevelChunk level,
+              if T.null source
+                then ""
+                else chunk $ "#" `mappend` source,
+              "]"
+            ],
+      " ",
+      msg
+    ]
+
+logLevelColour :: LogLevel -> (Chunk -> Chunk)
+logLevelColour = \case
+  LevelDebug -> fore white
+  LevelInfo -> fore yellow
+  LevelWarn -> fore orange
+  LevelError -> fore red
+  LevelOther _ -> id
+  where
+    orange = color256 214
+
+logLevelChunk :: LogLevel -> Chunk
+logLevelChunk = \case
+  LevelDebug -> "DEBUG"
+  LevelInfo -> "INFO"
+  LevelWarn -> "WARNING"
+  LevelError -> "ERROR"
+  LevelOther t -> chunk t

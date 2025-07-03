@@ -1,5 +1,6 @@
-{ mkDerivation, base, http-client, http-client-tls, lib, mtl
-, necrork, opt-env-conf, path-io, servant-client, text, unliftio
+{ mkDerivation, autodocodec, base, bytestring, http-client
+, http-client-tls, lib, monad-logger, mtl, necrork, opt-env-conf
+, path-io, safe-coloured-text, text, unliftio
 }:
 mkDerivation {
   pname = "necrork-cli";
@@ -8,8 +9,9 @@ mkDerivation {
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
-    base http-client http-client-tls mtl necrork opt-env-conf path-io
-    servant-client text unliftio
+    autodocodec base bytestring http-client http-client-tls
+    monad-logger mtl necrork opt-env-conf path-io safe-coloured-text
+    text unliftio
   ];
   executableHaskellDepends = [ base ];
   homepage = "https://github.com/NorfairKing/necrork#readme";

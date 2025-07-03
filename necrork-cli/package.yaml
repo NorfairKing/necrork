@@ -12,14 +12,17 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
+    - autodocodec
+    - bytestring
     - http-client
     - http-client-tls
+    - monad-logger
     - mtl
     - necrork
     - opt-env-conf
-    - servant-client
     - opt-env-conf
     - path-io
+    - safe-coloured-text
     - text
     - unliftio
 

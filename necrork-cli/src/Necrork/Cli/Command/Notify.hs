@@ -4,17 +4,11 @@
 module Necrork.Cli.Command.Notify (runNecrorkNotify) where
 
 import Control.Monad
-import Data.Either
+import Control.Monad.Logger
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
-import Data.Version (showVersion)
 import Necrork.Cli.Env
-import Necrork.Cli.OptParse
 import Necrork.Client
-import Network.HTTP.Client as HTTP
-import Network.HTTP.Client.TLS as HTTP
-import Paths_necrork_cli (version)
 import System.Exit
 import UnliftIO
 
@@ -25,23 +19,33 @@ runNecrorkNotify switchName = do
       putAlive necrorkClient switchName PutAliveRequest {..}
 
   let printResults =
-        liftIO
-          . putStr
-          . unlines
-          . map
-            ( \(nurl, PutAliveResponse {}) ->
-                unwords
-                  [ "Notified peer",
-                    show (showBaseUrl (unNodeUrl nurl)),
-                    "that",
-                    show (unSwitchName switchName),
-                    "is alive."
-                  ]
-            )
+        mapM_
+          ( \(nurl, PutAliveResponse {}) ->
+              logInfoN $
+                T.pack $
+                  unwords
+                    [ "Notified peer",
+                      show (showBaseUrl (unNodeUrl nurl)),
+                      "that",
+                      show (unSwitchName switchName),
+                      "is alive."
+                    ]
+          )
   case errsOrResponses of
     Right results -> printResults $ NE.toList results
     Left (errs, results) -> do
       printResults results
-      liftIO $ do
-        putStrLn "Errors occurred while notifying peers:"
-        die $ unlines $ map show $ NE.toList errs
+      forM_ errs $ \(peer, err) ->
+        logWarnN $
+          T.pack $
+            concat
+              [ "Error notifying peer: ",
+                show (showBaseUrl (unNodeUrl peer)),
+                "\n",
+                show err
+              ]
+      if null results
+        then do
+          logErrorN "Failed to notify at least one peer."
+          liftIO exitFailure
+        else logInfoN "Notified at least one peer successfully."
