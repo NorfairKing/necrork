@@ -23,6 +23,8 @@ import Control.Concurrent.TokenLimiter.Concurrent
 import Control.Monad
 import Control.Monad.Logger
 import Data.Foldable
+import Data.List.NonEmpty (NonEmpty (..))
+import qualified Data.List.NonEmpty as NE
 import Data.Maybe
 import Data.Sequence (Seq, ViewL (..), (|>))
 import qualified Data.Sequence as Seq
@@ -68,7 +70,7 @@ withNotifier settings func = do
 
 data NotifierSettings = NotifierSettings
   { notifierSettingSwitchName :: !SwitchName,
-    notifierSettingNodeUrl :: !NodeUrl,
+    notifierSettingPeers :: !(NonEmpty NodeUrl),
     notifierSettingLooperSettings :: !LooperSettings,
     notifierSettingTimeout :: !(Maybe Word32),
     notifierSettingNotifySettings :: !NotifySettings
@@ -77,7 +79,7 @@ data NotifierSettings = NotifierSettings
 
 makeNotifierSettings :: SwitchName -> NotifySettings -> NotifierSettings
 makeNotifierSettings notifierSettingSwitchName notifierSettingNotifySettings =
-  let notifierSettingNodeUrl = defaultNodeUrl
+  let notifierSettingPeers = NE.singleton defaultNodeUrl
       notifierSettingLooperSettings = defaultNotifierLooperSettings
       notifierSettingTimeout = Nothing
    in NotifierSettings {..}
@@ -95,13 +97,24 @@ parseNotifierSettings = do
         name "switch",
         metavar "SWITCH_NAME"
       ]
-  notifierSettingNodeUrl <-
-    setting
-      [ help "Base url of the necrork server",
-        reader $ maybeReader parseNodeUrl,
-        name "url",
-        metavar "URL",
-        valueWithShown showNodeUrl defaultNodeUrl
+  notifierSettingPeers <-
+    choice
+      [ someNonEmpty $
+          setting
+            [ help "Necrork peer URL",
+              reader $ maybeReader parseNodeUrl,
+              option,
+              long "peer",
+              metavar "URL"
+            ],
+        setting
+          [ help "Necrork peer URLs",
+            reader $ commaSeparated $ maybeReader parseNodeUrl,
+            env "PEERS",
+            conf "peers",
+            metavar "URL",
+            valueWithShown (showNodeUrl . NE.head) $ NE.singleton defaultNodeUrl
+          ]
       ]
   notifierSettingLooperSettings <-
     parseLooperSettings
@@ -162,7 +175,7 @@ makeNotifierEnv man NotifierSettings {..} = do
             tokenLimitConfigTokensPerSecond = 5
           }
   notifierEnvTokenLimiter <- liftIO $ makeTokenLimiter tokenLimitConfig
-  notifierEnvPeerQueue <- newTVarIO (Seq.singleton (True, notifierSettingNodeUrl))
+  notifierEnvPeerQueue <- newTVarIO (Seq.fromList (map ((,) True) (NE.toList notifierSettingPeers)))
   pure NotifierEnv {..}
 
 notifier :: (MonadUnliftIO m, MonadLogger m) => NotifierEnv -> Maybe (m void)
