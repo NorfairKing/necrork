@@ -6,10 +6,11 @@
 { peers
 , switch
 , timeout
+, intray
 }:
 with lib;
 let
-  config = { inherit peers switch timeout; };
+  config = { inherit peers switch timeout intray; };
   configFile = (formats.yaml { }).generate "necrork-notify-config.yaml" config;
 in
 writeShellScript "necrork-notification" ''
