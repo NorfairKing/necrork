@@ -2,18 +2,23 @@ final: prev:
 with final.lib;
 with final.haskell.lib;
 {
+  necrorkNotification = final.callPackage ./notification.nix { };
 
   necrorkRelease =
     final.symlinkJoin {
       name = "necrork-release";
       paths = builtins.attrValues final.necrorkReleasePackages;
-      passthru = final.necrorkReleasePackages;
+      passthru = {
+        notification = final.necrorkNotification;
+      } // final.necrorkReleasePackages;
     };
 
   necrorkReleasePackages =
     mapAttrs
       (_: pkg: justStaticExecutables pkg)
       final.haskellPackages.necrorkPackages;
+
+  necrork-cli = final.necrorkReleasePackages.necrork-cli;
 
   haskellPackages = prev.haskellPackages.override (old: {
     overrides = final.lib.composeExtensions (old.overrides or (_: _: { })) (self: _:
