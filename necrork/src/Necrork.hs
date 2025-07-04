@@ -154,7 +154,7 @@ data NotifierEnv = NotifierEnv
     notifierEnvTokenLimiter :: !TokenLimiter,
     notifierEnvTokensPerDebit :: !Count,
     -- Peers and whether it's the first time we contact them.
-    notifierEnvPeerQueue :: !(TVar (Seq (Bool, NodeUrl)))
+    notifierEnvPeerQueue :: !(MVar (Seq (Bool, NodeUrl)))
   }
 
 makeNotifierEnv :: (MonadIO m) => HTTP.Manager -> NotifierSettings -> m NotifierEnv
@@ -175,7 +175,7 @@ makeNotifierEnv man NotifierSettings {..} = do
             tokenLimitConfigTokensPerSecond = 5
           }
   notifierEnvTokenLimiter <- liftIO $ makeTokenLimiter tokenLimitConfig
-  notifierEnvPeerQueue <- newTVarIO (Seq.fromList (map ((,) True) (NE.toList notifierSettingPeers)))
+  notifierEnvPeerQueue <- newMVar $ Seq.fromList (map ((,) True) (NE.toList notifierSettingPeers))
   pure NotifierEnv {..}
 
 notifier :: (MonadUnliftIO m, MonadLogger m) => NotifierEnv -> Maybe (m void)
@@ -186,26 +186,27 @@ notifier notifierEnv =
     (notifierLooper notifierEnv)
 
 notifierLooper ::
-  (MonadIO m, MonadLogger m) =>
+  (MonadUnliftIO m, MonadLogger m) =>
   NotifierEnv ->
   LooperDef m
 notifierLooper notifierEnv =
   mkLooperDef "necrork-notifier" (notifierEnvLooperSettings notifierEnv) $
     runNotifierOnce notifierEnv
 
-runNotifierOnce :: forall m. (MonadIO m, MonadLogger m) => NotifierEnv -> m ()
+runNotifierOnce :: forall m. (MonadUnliftIO m, MonadLogger m) => NotifierEnv -> m ()
 runNotifierOnce NotifierEnv {..} = go
   where
     go = do
-      queue <- readTVarIO notifierEnvPeerQueue
-      case Seq.viewl queue of
-        -- Do nothing, the queue is empty.
-        -- This should not happen because the queue can only grow, but fine
-        -- if it does because this node will be considered dead.
-        EmptyL -> logWarnN "No peers left. This indicates a bug in necrork-sdk."
-        ((firstTime, peer) :< restPeers) -> do
-          liftIO $ void $ waitDebit notifierEnvTokenLimiter notifierEnvTokensPerDebit
-          (newQueue, success) <-
+      success <- modifyMVar notifierEnvPeerQueue $ \queue ->
+        case Seq.viewl queue of
+          -- Do nothing, the queue is empty.
+          -- This should not happen because the queue can only grow, but fine
+          -- if it does because this node will be considered dead.
+          EmptyL -> do
+            logWarnN "No peers left. This indicates a bug in necrork-sdk."
+            pure (queue, True)
+          ((firstTime, peer) :< restPeers) -> do
+            liftIO $ void $ waitDebit notifierEnvTokenLimiter notifierEnvTokensPerDebit
             if firstTime
               then do
                 mNewPeers <- contactPeerTheFirstTime peer
@@ -215,8 +216,7 @@ runNotifierOnce NotifierEnv {..} = go
               else do
                 mDone <- contactPeerToSayWeAreStillAlive peer
                 pure (restPeers |> (isNothing mDone, peer), isJust mDone)
-          atomically $ writeTVar notifierEnvPeerQueue newQueue
-          when (not success) go
+      when (not success) go
       where
         appendNewPeers ::
           Seq (Bool, NodeUrl) ->
