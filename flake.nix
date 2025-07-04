@@ -36,11 +36,18 @@
     in
     {
       overlays.${system} = import ./nix/overlay.nix;
-      packages.${system} = {
-        default = pkgs.necrorkRelease;
-      };
+      packages.${system}.default = pkgs.necrorkRelease;
       checks.${system} = {
         release = self.packages.${system}.default;
+        example-notification = pkgs.necrorkNotification {
+          peers = [ "necrork.example.com" ];
+          switch = "example.com";
+          timeout = 60;
+          intray = {
+            username = "user";
+            key-file = "/secret/intray.key";
+          };
+        };
         shell = self.devShells.${system}.default;
         pre-commit = pre-commit-hooks.lib.${system}.run {
           src = ./.;
