@@ -162,9 +162,15 @@ makeNotifierEnv man NotifierSettings {..} = do
   let notifierEnvSwitchName = notifierSettingSwitchName
       notifierEnvHttpManager = man
       notifierEnvLooperSettings = notifierSettingLooperSettings
-      notifierEnvTimeout = fromMaybe (2 * ceiling (looperSetPeriod notifierSettingLooperSettings)) notifierSettingTimeout
+      period = looperSetPeriod notifierSettingLooperSettings
+      notifierEnvTimeout = fromMaybe (2 * ceiling period) notifierSettingTimeout
       notifierEnvNotifySettings = notifierSettingNotifySettings
-      notifierEnvTokensPerDebit = ceiling (looperSetPeriod notifierSettingLooperSettings)
+      notifierEnvTokensPerDebit =
+        max
+          (ceiling period)
+          -- Minimum period of five seconds, so that there is a maximum of one
+          -- request per second.
+          5
       tokenLimitConfig =
         TokenLimitConfig
           { -- Try two requests immediately
