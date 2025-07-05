@@ -5,19 +5,22 @@ module Necrork.Cli.Command.Notify (runNecrorkNotify) where
 
 import Control.Monad
 import Control.Monad.Logger
+import Control.Monad.Reader
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Text as T
 import Necrork.Cli.Env
 import Necrork.Cli.OptParse as Cli
 import Necrork.Client
 import System.Exit
-import UnliftIO
 
 runNecrorkNotify :: Cli.NotifySettings -> CliM ()
 runNecrorkNotify Cli.NotifySettings {..} = do
   let switchName = notifySettingSwitchName
+
+  peers <- discoverPeers
+
   errsOrResponses <-
-    forEachPeer $
+    forEachOfPeers peers $
       case notifySettingPutSwitchRequest of
         Just putSwitchRequest -> putSwitch necrorkClient switchName putSwitchRequest
         Nothing -> putAlive necrorkClient switchName

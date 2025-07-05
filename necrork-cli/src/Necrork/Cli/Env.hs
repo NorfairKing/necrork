@@ -6,12 +6,14 @@
 
 module Necrork.Cli.Env where
 
+import Control.Monad
 import Control.Monad.Logger
 import Control.Monad.Reader
 import qualified Data.ByteString.Char8 as SB8
 import Data.Either (partitionEithers)
 import Data.List.NonEmpty (NonEmpty (..))
 import qualified Data.List.NonEmpty as NE
+import qualified Data.Set as S
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Version (showVersion)
@@ -63,6 +65,40 @@ withEnv Settings {..} func = do
   envHttpManager <- liftIO $ HTTP.newManager managerSets
   func Env {..}
 
+discoverPeers :: CliM (NonEmpty NodeUrl)
+discoverPeers = do
+  peers <- asks envPeers
+  errsOrResults <- forEachOfPeers peers $ do
+    -- This is a placeholder for the actual discovery logic.
+    -- Replace with the actual client call to discover peers.
+    getPeersResponsePeers <$> getPeers necrorkClient
+  discoverdPeers <- case errsOrResults of
+    Left (errs, oks) -> do
+      forM_ errs $ \(peer, err) ->
+        logWarnN $
+          T.pack $
+            concat
+              [ "Failed to discover peers from: ",
+                show (showBaseUrl (unNodeUrl peer)),
+                "\n",
+                show err
+              ]
+      pure $ S.unions $ map snd oks
+    Right peers' -> pure $ S.unions $ map snd $ NE.toList peers'
+  -- Safe because the original nonempty list is part of this set.
+  let originalSet = S.fromList (NE.toList peers)
+  let newPeers = S.difference discoverdPeers originalSet
+  when (not (null newPeers)) $
+    forM_ newPeers $ \peer ->
+      logInfoN $
+        T.pack $
+          concat
+            [ "Discovered new peer: ",
+              show (showBaseUrl (unNodeUrl peer))
+            ]
+
+  pure $ NE.fromList $ S.toList $ S.union discoverdPeers originalSet
+
 forEachPeer ::
   ClientM a ->
   CliM
@@ -71,8 +107,19 @@ forEachPeer ::
         (NonEmpty (NodeUrl, a))
     )
 forEachPeer func = do
-  man <- asks envHttpManager
   peers <- asks envPeers
+  forEachOfPeers peers func
+
+forEachOfPeers ::
+  NonEmpty NodeUrl ->
+  ClientM a ->
+  CliM
+    ( Either
+        (NonEmpty (NodeUrl, ClientError), [(NodeUrl, a)])
+        (NonEmpty (NodeUrl, a))
+    )
+forEachOfPeers peers func = do
+  man <- asks envHttpManager
   results <- forConcurrently peers $ \peer -> do
     let cenv = mkClientEnv man (unNodeUrl peer)
     liftIO $ (,) peer <$> runClientM func cenv

@@ -14,6 +14,7 @@ library:
   dependencies:
     - autodocodec
     - bytestring
+    - containers
     - http-client
     - http-client-tls
     - monad-logger
