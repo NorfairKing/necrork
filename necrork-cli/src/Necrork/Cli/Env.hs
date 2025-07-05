@@ -65,6 +65,17 @@ withEnv Settings {..} func = do
   envHttpManager <- liftIO $ HTTP.newManager managerSets
   func Env {..}
 
+forEachPeer ::
+  ClientM a ->
+  CliM
+    ( Either
+        (NonEmpty (NodeUrl, ClientError), [(NodeUrl, a)])
+        (NonEmpty (NodeUrl, a))
+    )
+forEachPeer func = do
+  peers <- discoverPeers
+  forEachOfPeers peers func
+
 discoverPeers :: CliM (NonEmpty NodeUrl)
 discoverPeers = do
   peers <- asks envPeers
@@ -98,17 +109,6 @@ discoverPeers = do
             ]
 
   pure $ NE.fromList $ S.toList $ S.union discoverdPeers originalSet
-
-forEachPeer ::
-  ClientM a ->
-  CliM
-    ( Either
-        (NonEmpty (NodeUrl, ClientError), [(NodeUrl, a)])
-        (NonEmpty (NodeUrl, a))
-    )
-forEachPeer func = do
-  peers <- asks envPeers
-  forEachOfPeers peers func
 
 forEachOfPeers ::
   NonEmpty NodeUrl ->

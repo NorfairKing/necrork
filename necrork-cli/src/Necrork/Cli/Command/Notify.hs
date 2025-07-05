@@ -17,13 +17,10 @@ runNecrorkNotify :: Cli.NotifySettings -> CliM ()
 runNecrorkNotify Cli.NotifySettings {..} = do
   let switchName = notifySettingSwitchName
 
-  peers <- discoverPeers
-
-  errsOrResponses <-
-    forEachOfPeers peers $
-      case notifySettingPutSwitchRequest of
-        Just putSwitchRequest -> putSwitch necrorkClient switchName putSwitchRequest
-        Nothing -> putAlive necrorkClient switchName
+  errsOrResponses <- forEachPeer $
+    case notifySettingPutSwitchRequest of
+      Just putSwitchRequest -> putSwitch necrorkClient switchName putSwitchRequest
+      Nothing -> putAlive necrorkClient switchName
 
   let printResults =
         mapM_
