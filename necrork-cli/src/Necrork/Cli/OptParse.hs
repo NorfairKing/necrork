@@ -52,7 +52,8 @@ parseSettings = do
               option,
               long "peer",
               reader $ maybeReader parseNodeUrl,
-              metavar "URL"
+              metavar "URL",
+              example "https://necrork.cs-syd.eu"
             ],
         setting
           [ help "Comma-separated list of peers to connect to.",
